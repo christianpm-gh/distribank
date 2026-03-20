@@ -1,10 +1,10 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 
-const items = [
+const items: { label: string; icon: string; path: string; isAction?: boolean }[] = [
   { label: 'Inicio', icon: '🏠', path: '/' },
   { label: 'Tarjetas', icon: '💳', path: '/cards' },
   { label: 'Transferir', icon: '↔', path: '/transfer', isAction: true },
-] as const
+]
 
 export default function BottomNav() {
   const navigate = useNavigate()
