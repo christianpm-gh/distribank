@@ -13,6 +13,8 @@ export const customer: Customer = {
   email: 'natalia.ruiz@distribank.mx',
 }
 
+export const DEMO_PASSWORD = 'Distribank2025!'
+
 export const accounts: Account[] = [
   {
     id: 27,
