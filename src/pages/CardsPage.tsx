@@ -11,12 +11,12 @@ export default function CardsPage() {
   const creditCards = cards?.filter((c) => c.card_type === 'CREDIT') ?? []
 
   return (
-    <div className="min-h-screen bg-surface-base pb-6">
+    <div className="min-h-screen bg-surface-base">
       <Header title="Mis Tarjetas" />
 
-      <main className="space-y-5 px-4">
+      <div className="mx-auto max-w-[var(--content-max-width)] px-[var(--content-padding)]">
         {isLoading && (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-24 animate-pulse rounded-lg bg-surface-card" />
             ))}
@@ -24,11 +24,11 @@ export default function CardsPage() {
         )}
 
         {debitCards.length > 0 && (
-          <div>
+          <div className="mb-6">
             <h2 className="mb-3 font-sora text-sm font-semibold text-text-secondary">
               Tarjetas de Débito
             </h2>
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {debitCards.map((card) => (
                 <PhysicalCard
                   key={card.id}
@@ -46,7 +46,7 @@ export default function CardsPage() {
             <h2 className="mb-3 font-sora text-sm font-semibold text-text-secondary">
               Tarjetas de Crédito
             </h2>
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {creditCards.map((card) => (
                 <PhysicalCard
                   key={card.id}
@@ -58,7 +58,7 @@ export default function CardsPage() {
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   )
 }

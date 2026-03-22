@@ -41,57 +41,63 @@ export default function CardDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-base pb-6">
+    <div className="min-h-screen bg-surface-base">
       <Header title="Detalle de tarjeta" />
 
-      {toast && (
-        <div
-          className={`mx-4 mb-3 rounded-md px-4 py-2 text-sm ${
-            toast.type === 'success'
-              ? 'bg-status-success/15 text-status-success'
-              : 'bg-status-error/15 text-status-error'
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
+      <div className="mx-auto max-w-[var(--content-max-width)] px-[var(--content-padding)]">
+        {toast && (
+          <div
+            className={`mb-4 rounded-md px-4 py-2 text-sm ${
+              toast.type === 'success'
+                ? 'bg-status-success/15 text-status-success'
+                : 'bg-status-error/15 text-status-error'
+            }`}
+          >
+            {toast.message}
+          </div>
+        )}
 
-      <main className="space-y-5 px-4">
-        <PhysicalCard card={card} variant="detail" />
+        <div className="grid grid-cols-[var(--panel-xl)_1fr] gap-6">
+          {/* Left column: Card visual + control */}
+          <div className="space-y-5">
+            <PhysicalCard card={card} variant="detail" />
 
-        <div className="rounded-lg border border-surface-elevated bg-surface-card p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-text-secondary">Tipo</span>
-            <span className="text-xs text-text-primary">{typeLabel}</span>
+            <div className="rounded-lg border border-surface-elevated bg-surface-card p-4">
+              <CardControlSwitch
+                card={card}
+                onToggle={handleToggle}
+                isLoading={toggleMutation.isPending}
+              />
+            </div>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-text-secondary">Estado</span>
-            <StatusBadge status={statusKey} />
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-text-secondary">Vencimiento</span>
-            <span className="text-xs text-text-primary">{expiry}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-text-secondary">Límite diario</span>
-            <span className="text-xs text-text-primary">{formatCurrency(card.daily_limit)} por día</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-text-secondary">Cuenta asociada</span>
-            <span className="text-xs text-text-primary">
-              {accountLabel} {maskAccountNumber(card.account_number)}
-            </span>
+
+          {/* Right column: Metadata */}
+          <div className="rounded-lg border border-surface-elevated bg-surface-card p-4 space-y-3 h-fit">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-text-secondary">Tipo</span>
+              <span className="text-xs text-text-primary">{typeLabel}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-text-secondary">Estado</span>
+              <StatusBadge status={statusKey} />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-text-secondary">Vencimiento</span>
+              <span className="text-xs text-text-primary">{expiry}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-text-secondary">Límite diario</span>
+              <span className="text-xs text-text-primary">{formatCurrency(card.daily_limit)} por día</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-text-secondary">Cuenta asociada</span>
+              <span className="text-xs text-text-primary">
+                {accountLabel} {maskAccountNumber(card.account_number)}
+              </span>
+            </div>
           </div>
         </div>
-
-        <div className="rounded-lg border border-surface-elevated bg-surface-card p-4">
-          <CardControlSwitch
-            card={card}
-            onToggle={handleToggle}
-            isLoading={toggleMutation.isPending}
-          />
-        </div>
-      </main>
+      </div>
     </div>
   )
 }
