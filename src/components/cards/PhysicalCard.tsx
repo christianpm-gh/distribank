@@ -25,8 +25,8 @@ export default function PhysicalCard({ card, variant = 'list', onClick }: Props)
     return (
       <div
         onClick={onClick}
-        className={`relative overflow-hidden rounded-lg p-4 ${
-          onClick ? 'cursor-pointer transition-transform hover:scale-[1.01]' : ''
+        className={`relative overflow-hidden rounded-lg p-4 transition-transform duration-200 ${
+          onClick ? 'cursor-pointer hover:-translate-y-0.5' : ''
         } ${isInactive ? 'grayscale-[80%]' : ''}`}
         style={{ background: gradient }}
       >
