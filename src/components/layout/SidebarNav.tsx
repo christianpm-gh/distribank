@@ -30,11 +30,13 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
     onClose?.()
   }
 
-  const sidebarContent = (
+  const renderContent = (expanded: boolean) => (
     <>
       <div className="px-5 py-6">
-        <h2 className="font-sora text-xl font-bold text-text-primary lg:block hidden">DistriBank</h2>
-        <h2 className="font-sora text-xl font-bold text-text-primary lg:hidden text-center">D</h2>
+        {expanded
+          ? <h2 className="font-sora text-xl font-bold text-text-primary">DistriBank</h2>
+          : <h2 className="font-sora text-xl font-bold text-text-primary text-center">D</h2>
+        }
       </div>
 
       <nav className="flex-1 space-y-1 px-3">
@@ -55,7 +57,7 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
               title={item.label}
             >
               {item.icon}
-              <span className="hidden lg:inline">{item.label}</span>
+              {expanded && <span>{item.label}</span>}
             </button>
           )
         })}
@@ -66,19 +68,23 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-primary text-sm font-bold text-white">
             {customerInitial || '?'}
           </div>
-          <div className="hidden lg:block min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-text-primary">
-              {customerName || 'Usuario'}
-            </p>
-            <p className="text-xs text-text-muted">Cliente</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="hidden lg:block shrink-0 text-text-muted hover:text-text-primary transition-colors"
-            title="Cerrar sesión"
-          >
-            <LogOut size={18} className="text-current" />
-          </button>
+          {expanded && (
+            <>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-text-primary">
+                  {customerName || 'Usuario'}
+                </p>
+                <p className="text-xs text-text-muted">Cliente</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="shrink-0 text-text-muted hover:text-text-primary transition-colors"
+                title="Cerrar sesión"
+              >
+                <LogOut size={18} className="text-current" />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </>
@@ -86,17 +92,24 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
 
   return (
     <>
-      {/* Desktop/Tablet sidebar: visible at md+ */}
+      {/* Desktop sidebar: collapsed at md, expanded at lg */}
       <aside className="fixed left-0 top-0 bottom-0 z-30 hidden md:flex w-[var(--sidebar-collapsed)] lg:w-[var(--sidebar-width)] flex-col border-r border-surface-elevated bg-surface-card">
-        {sidebarContent}
+        {/* Collapsed at md-lg: no labels */}
+        <div className="flex flex-col h-full lg:hidden">
+          {renderContent(false)}
+        </div>
+        {/* Expanded at lg+: with labels */}
+        <div className="hidden lg:flex flex-col h-full">
+          {renderContent(true)}
+        </div>
       </aside>
 
-      {/* Mobile drawer overlay */}
+      {/* Mobile drawer: always expanded with labels */}
       {isDrawerOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={onClose} />
           <aside className="relative z-10 flex h-full w-[var(--sidebar-width)] flex-col border-r border-surface-elevated bg-surface-card">
-            {sidebarContent}
+            {renderContent(true)}
           </aside>
         </div>
       )}
