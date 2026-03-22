@@ -109,7 +109,7 @@ export default function AllTransactionsPage() {
                 transaction={tx}
                 variant="card"
                 sourceAccountType={tx._accountType}
-                onClick={() => navigate(`/transactions/${tx.transaction_uuid}`)}
+                onClick={() => navigate(`/transactions/${tx.transaction_uuid}`, { state: { fromAllTransactions: true, uuids: filtered.map(t => t.transaction_uuid) } })}
               />
             ))}
           </div>
