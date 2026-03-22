@@ -53,9 +53,17 @@ export default function TransactionDetailPage() {
     navigator.clipboard.writeText(tx.transaction_uuid)
   }
 
+  const handleBack = () => {
+    if (navState?.fromAllTransactions) {
+      navigate('/transactions')
+    } else {
+      navigate(-1)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-surface-base pb-6">
-      <Header title="Detalle de movimiento" />
+      <Header title="Detalle de movimiento" onBack={handleBack} />
 
       <div className="mx-auto max-w-2xl space-y-5 px-[var(--content-padding)]">
         {/* Row 1: Amount + Status badge + nav arrows */}
