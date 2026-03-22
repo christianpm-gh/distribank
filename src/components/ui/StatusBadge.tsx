@@ -25,7 +25,7 @@ export default function StatusBadge({ status }: { status: Status }) {
 
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+      className="inline-flex min-w-[90px] items-center justify-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
       style={{
         backgroundColor: `color-mix(in srgb, ${color} 15%, transparent)`,
         color,

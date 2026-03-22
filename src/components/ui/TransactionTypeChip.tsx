@@ -12,7 +12,7 @@ export default function TransactionTypeChip({ type }: { type: TransactionType })
   const { label, icon } = config[type]
 
   return (
-    <span className="inline-flex items-center gap-1 rounded-sm border border-surface-elevated px-1.5 py-0.5 text-xs text-text-secondary">
+    <span className="inline-flex min-w-[100px] items-center justify-center gap-1 rounded-sm border border-surface-elevated px-1.5 py-0.5 text-xs text-text-secondary">
       {icon}
       {label}
     </span>

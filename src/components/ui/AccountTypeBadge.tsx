@@ -6,7 +6,7 @@ export default function AccountTypeBadge({ accountType }: { accountType: Account
 
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-xs font-medium"
+      className="inline-flex min-w-[70px] items-center justify-center gap-1 rounded-sm px-1.5 py-0.5 text-xs font-medium"
       style={{
         backgroundColor: isCredit
           ? 'color-mix(in srgb, var(--color-brand-accent) 15%, transparent)'
