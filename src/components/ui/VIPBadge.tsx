@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, useAnimation } from 'framer-motion'
+import { Star } from 'lucide-react'
 
 export default function VIPBadge({ weekTransactions }: { weekTransactions: number }) {
   const isVIP = weekTransactions >= 3
@@ -43,7 +44,7 @@ export default function VIPBadge({ weekTransactions }: { weekTransactions: numbe
         borderColor: 'rgba(247, 164, 64, 0.4)',
       }}
     >
-      <span className="text-xs">⭐</span>
+      <Star size={12} fill="currentColor" className="text-current" style={{ color: 'var(--color-vip-gold)' }} />
       <span className="text-xs font-bold" style={{ color: 'var(--color-vip-gold)' }}>
         VIP
       </span>

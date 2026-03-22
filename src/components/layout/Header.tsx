@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { ChevronLeft, X } from 'lucide-react'
 
 type Props = {
   title?: string
@@ -16,9 +17,9 @@ export default function Header({ title, variant = 'with-back', onAction, actionL
       <header className="flex h-14 items-center justify-end px-4">
         <button
           onClick={onClose ?? (() => navigate(-1))}
-          className="text-xl text-text-secondary hover:text-text-primary"
+          className="text-text-secondary hover:text-text-primary"
         >
-          ✕
+          <X size={20} className="text-current" />
         </button>
       </header>
     )
@@ -28,9 +29,9 @@ export default function Header({ title, variant = 'with-back', onAction, actionL
     <header className="flex h-14 items-center px-4">
       <button
         onClick={() => navigate(-1)}
-        className="mr-3 text-xl text-text-secondary hover:text-text-primary"
+        className="mr-3 text-text-secondary hover:text-text-primary"
       >
-        ←
+        <ChevronLeft size={20} className="text-current" />
       </button>
       <h1 className="flex-1 text-center font-sora text-base font-semibold text-text-primary">
         {title}

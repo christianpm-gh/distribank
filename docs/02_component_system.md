@@ -67,6 +67,8 @@ Estos tokens son el contrato entre spec y Figma. Toda decisión de componente re
 
 ## 1. Componentes atómicos
 
+> **Biblioteca de íconos:** Todos los íconos del sistema provienen de `lucide-react`. Se aplican con `className="text-current"` para heredar color del contenedor padre, y `size` explícito según contexto (12–14 para inline, 16–20 para nav/acciones, 24–32 para estados destacados).
+
 ---
 
 ### C-01 — Badge de estado (`StatusBadge`)
@@ -427,7 +429,9 @@ Línea de tiempo   [▶ Reproducir]   ← alineado a la derecha del título de s
 
 ---
 
-### C-12 — Bottom Navigation Bar
+### C-12 — Bottom Navigation Bar [DEPRECATED — desktop]
+
+> **@deprecated** — Reemplazado por C-14 SidebarNav para layout desktop. Archivo retenido como fallback mobile potencial.
 
 Presente en todas las pantallas post-login excepto S-09, S-10, S-11 (flujo modal de transferencia).
 
@@ -452,6 +456,61 @@ Presente en S-03 al S-11.
 - `with-back`: Flecha ← + Título centrado. Aparece en S-03, S-04, S-06, S-08, S-10
 - `with-back-action`: Flecha ← + Título + acción secundaria derecha. Aparece en S-05 (acción: filtro)
 - `modal`: Sin flecha, sin título fijo — solo ×. Para S-11
+
+---
+
+### C-14 — Sidebar de navegación (`SidebarNav`)
+
+Componente de layout desktop que reemplaza a C-12 BottomNav. Presente en todas las pantallas post-login como parte del `AppShell`.
+
+**Anatomía — estado expandido (240px):**
+
+```
+┌──────────────────────────┐
+│  DistriBank              │  ← font-sora, text-xl, font-bold
+│                          │
+│  ┌────────────────────┐  │
+│  │ 🏠  Inicio         │  │  ← lucide Home, active: border-l brand-primary
+│  └────────────────────┘  │
+│  │ 💳  Tarjetas       │  │  ← lucide CreditCard
+│  │ ↔   Transferir     │  │  ← lucide ArrowLeftRight
+│                          │
+│  ────────────────────────│  ← border-t separator
+│  [N] Natalia  [logout]   │  ← avatar + nombre + lucide LogOut
+│      Cliente             │
+└──────────────────────────┘
+```
+
+- **Width expandido:** 240px (`w-60`)
+- **Width colapsado:** 64px (`w-16`) — solo íconos, sin labels
+- **Breakpoint de colapso:** 1024px (auto) + toggle manual posible
+- **Position:** `fixed left-0 top-0 bottom-0 z-30`
+- **Background:** `color.surface.card`
+- **Border:** 1px right `color.surface.elevated`
+
+**Ítem activo:**
+- Borde izquierdo: 2px `color.brand.primary`
+- Background: `color.surface.elevated`
+- Texto: `color.text.primary`
+
+**Ítem inactivo:**
+- Texto: `color.text.secondary`
+- Hover: background `color.surface.elevated`, texto `color.text.primary`
+
+**Sección inferior (usuario):**
+- Avatar: círculo 36×36px, `color.brand.primary`, inicial en blanco
+- Nombre: `type.body.medium`, truncado
+- Subtítulo: "Cliente", `type.caption`, `color.text.muted`
+- Logout: ícono lucide `LogOut`, 18px, `color.text.muted` hover `color.text.primary`
+
+**Íconos (lucide-react):**
+
+| Ítem | Ícono | Size |
+|---|---|---|
+| Inicio | `Home` | 20 |
+| Tarjetas | `CreditCard` | 20 |
+| Transferir | `ArrowLeftRight` | 20 |
+| Logout | `LogOut` | 18 |
 
 ---
 

@@ -1,9 +1,13 @@
 import { useNavigate, useLocation } from 'react-router-dom'
+import { Home, CreditCard, ArrowLeftRight } from 'lucide-react'
+import type { ReactNode } from 'react'
 
-const items: { label: string; icon: string; path: string; isAction?: boolean }[] = [
-  { label: 'Inicio', icon: '🏠', path: '/' },
-  { label: 'Tarjetas', icon: '💳', path: '/cards' },
-  { label: 'Transferir', icon: '↔', path: '/transfer', isAction: true },
+/** @deprecated Use SidebarNav (C-14) for desktop layout. Retained for mobile fallback. */
+
+const items: { label: string; icon: ReactNode; path: string; isAction?: boolean }[] = [
+  { label: 'Inicio', icon: <Home size={20} className="text-current" />, path: '/' },
+  { label: 'Tarjetas', icon: <CreditCard size={20} className="text-current" />, path: '/cards' },
+  { label: 'Transferir', icon: <ArrowLeftRight size={20} className="text-current" />, path: '/transfer', isAction: true },
 ]
 
 export default function BottomNav() {
@@ -23,7 +27,7 @@ export default function BottomNav() {
               isActive ? 'text-brand-primary' : 'text-text-secondary hover:text-text-primary'
             }`}
           >
-            <span className="text-xl">{item.icon}</span>
+            {item.icon}
             <span className="text-xs">{item.label}</span>
             {isActive && (
               <span className="absolute bottom-0 h-0.5 w-8 rounded-full bg-brand-primary" />

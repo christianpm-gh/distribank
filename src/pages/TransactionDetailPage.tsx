@@ -6,6 +6,7 @@ import StatusBadge from '@/components/ui/StatusBadge'
 import TransactionTypeChip from '@/components/ui/TransactionTypeChip'
 import TransactionTimeline from '@/components/transactions/TransactionTimeline'
 import { maskAccountNumber, maskCardNumber, formatDate } from '@/lib/utils'
+import { Copy } from 'lucide-react'
 
 export default function TransactionDetailPage() {
   const { uuid } = useParams()
@@ -49,7 +50,7 @@ export default function TransactionDetailPage() {
             <span className="text-xs text-text-secondary">UUID</span>
             <button onClick={copyUuid} className="flex items-center gap-1 font-mono text-xs text-text-muted hover:text-text-primary">
               {tx.transaction_uuid.slice(0, 8)}...{tx.transaction_uuid.slice(-4)}
-              <span>📋</span>
+              <Copy size={16} className="text-current" />
             </button>
           </div>
 

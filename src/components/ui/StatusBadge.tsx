@@ -1,11 +1,14 @@
+import { Lock } from 'lucide-react'
+import type { ReactNode } from 'react'
+
 type Status =
   | 'active' | 'blocked' | 'expired' | 'cancelled'
   | 'completed' | 'pending' | 'failed' | 'rolled_back'
   | 'inactive' | 'frozen' | 'closed'
 
-const config: Record<Status, { label: string; color: string; icon?: string }> = {
+const config: Record<Status, { label: string; color: string; icon?: ReactNode }> = {
   active: { label: 'Activa', color: 'var(--color-status-success)' },
-  blocked: { label: 'Bloqueada', color: 'var(--color-status-error)', icon: '🔒' },
+  blocked: { label: 'Bloqueada', color: 'var(--color-status-error)', icon: <Lock size={12} className="text-current" /> },
   expired: { label: 'Vencida', color: 'var(--color-status-neutral)' },
   cancelled: { label: 'Cancelada', color: 'var(--color-status-neutral)' },
   completed: { label: 'Completada', color: 'var(--color-text-muted)' },
@@ -32,7 +35,7 @@ export default function StatusBadge({ status }: { status: Status }) {
         className="inline-block h-1.5 w-1.5 rounded-full"
         style={{ backgroundColor: color }}
       />
-      {icon && <span className="text-xs">{icon}</span>}
+      {icon}
       {label}
     </span>
   )

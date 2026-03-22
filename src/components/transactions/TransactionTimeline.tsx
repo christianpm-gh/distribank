@@ -1,14 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import type { ReactNode } from 'react'
 import type { TransactionLogEvent, LogEventType } from '@/types/api.types'
 import { formatDate } from '@/lib/utils'
+import { Clock, ArrowUpFromLine, ArrowDownToLine, CheckCheck, RotateCcw, XCircle, Play, Pause } from 'lucide-react'
 
-const eventConfig: Record<LogEventType, { icon: string; label: string; color: string }> = {
-  INITIATED: { icon: '🕐', label: 'Operación iniciada', color: 'var(--color-brand-primary)' },
-  DEBIT_APPLIED: { icon: '↑', label: 'Débito aplicado', color: 'var(--color-status-rollback)' },
-  CREDIT_APPLIED: { icon: '↓', label: 'Crédito aplicado', color: 'var(--color-status-success)' },
-  COMPLETED: { icon: '✓✓', label: 'Completada', color: 'var(--color-status-success)' },
-  COMPENSATED: { icon: '↺', label: 'Revertida — monto restaurado', color: 'var(--color-status-rollback)' },
-  FAILED: { icon: '✕', label: 'Error en procesamiento', color: 'var(--color-status-error)' },
+const eventConfig: Record<LogEventType, { icon: ReactNode; label: string; color: string }> = {
+  INITIATED: { icon: <Clock size={16} className="text-current" />, label: 'Operación iniciada', color: 'var(--color-brand-primary)' },
+  DEBIT_APPLIED: { icon: <ArrowUpFromLine size={16} className="text-current" />, label: 'Débito aplicado', color: 'var(--color-status-rollback)' },
+  CREDIT_APPLIED: { icon: <ArrowDownToLine size={16} className="text-current" />, label: 'Crédito aplicado', color: 'var(--color-status-success)' },
+  COMPLETED: { icon: <CheckCheck size={16} className="text-current" />, label: 'Completada', color: 'var(--color-status-success)' },
+  COMPENSATED: { icon: <RotateCcw size={16} className="text-current" />, label: 'Revertida — monto restaurado', color: 'var(--color-status-rollback)' },
+  FAILED: { icon: <XCircle size={16} className="text-current" />, label: 'Error en procesamiento', color: 'var(--color-status-error)' },
 }
 
 type PlayerState = 'idle' | 'playing' | 'paused' | 'completed'
@@ -53,11 +55,11 @@ export default function TransactionTimeline({ events }: { events: TransactionLog
     setPlayerState('paused')
   }
 
-  const buttonLabel = {
-    idle: '▶ Reproducir',
-    playing: '⏸ Pausar',
-    paused: '▶ Continuar',
-    completed: '↺ Reproducir de nuevo',
+  const buttonConfig = {
+    idle: { icon: <Play size={14} className="text-current" />, label: 'Reproducir' },
+    playing: { icon: <Pause size={14} className="text-current" />, label: 'Pausar' },
+    paused: { icon: <Play size={14} className="text-current" />, label: 'Continuar' },
+    completed: { icon: <RotateCcw size={14} className="text-current" />, label: 'Reproducir de nuevo' },
   }[playerState]
 
   const handleClick = () => {
@@ -71,9 +73,10 @@ export default function TransactionTimeline({ events }: { events: TransactionLog
         <h3 className="font-sora text-sm font-semibold text-text-primary">Línea de tiempo</h3>
         <button
           onClick={handleClick}
-          className="rounded-sm border border-surface-elevated px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-elevated"
+          className="inline-flex items-center gap-1 rounded-sm border border-surface-elevated px-2 py-1 text-xs text-text-secondary transition-colors hover:bg-surface-elevated"
         >
-          {buttonLabel}
+          {buttonConfig.icon}
+          {buttonConfig.label}
         </button>
       </div>
 
@@ -88,11 +91,12 @@ export default function TransactionTimeline({ events }: { events: TransactionLog
             <div key={event.id} className="flex gap-3">
               <div className="flex flex-col items-center">
                 <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full border-2 bg-surface-elevated text-sm transition-opacity duration-300 ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-full border-2 bg-surface-elevated transition-opacity duration-300 ${
                     isVisible ? 'opacity-100' : 'opacity-30'
                   }`}
                   style={{
                     borderColor: isVisible ? cfg.color : 'var(--color-surface-elevated)',
+                    color: isVisible ? cfg.color : 'var(--color-text-muted)',
                     boxShadow: isVisible && isTerminalError ? `0 0 8px ${cfg.color}` : undefined,
                   }}
                 >

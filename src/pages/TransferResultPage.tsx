@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import SignedAmount from '@/components/ui/SignedAmount'
 import type { TransactionStatus } from '@/types/api.types'
+import { Check, Clock, X, RotateCcw, Copy } from 'lucide-react'
 
 type ResultState = {
   status: TransactionStatus
@@ -14,31 +16,31 @@ type ResultState = {
 }
 
 const statusConfig: Record<TransactionStatus, {
-  icon: string
+  icon: ReactNode
   title: string
   description: string
   color: string
 }> = {
   COMPLETED: {
-    icon: '✓',
+    icon: <Check size={32} className="text-current" />,
     title: 'Transferencia exitosa',
     description: 'Tu operación ha sido completada.',
     color: 'var(--color-status-success)',
   },
   PENDING: {
-    icon: '🕐',
+    icon: <Clock size={32} className="text-current" />,
     title: 'Transferencia en proceso',
     description: 'Tu operación está siendo procesada. Recibirás confirmación en breve.',
     color: 'var(--color-status-warning)',
   },
   FAILED: {
-    icon: '✕',
+    icon: <X size={32} className="text-current" />,
     title: 'No se pudo completar la transferencia',
     description: 'Ocurrió un error al procesar tu operación. Intenta de nuevo.',
     color: 'var(--color-status-error)',
   },
   ROLLED_BACK: {
-    icon: '↺',
+    icon: <RotateCcw size={32} className="text-current" />,
     title: 'Transferencia revertida',
     description: 'La operación no pudo completarse y el monto fue restaurado a tu cuenta.',
     color: 'var(--color-status-rollback)',
@@ -68,7 +70,7 @@ export default function TransferResultPage() {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-        className="flex h-20 w-20 items-center justify-center rounded-full text-4xl"
+        className="flex h-20 w-20 items-center justify-center rounded-full"
         style={{ backgroundColor: `color-mix(in srgb, ${cfg.color} 15%, transparent)`, color: cfg.color }}
       >
         {cfg.icon}
@@ -111,7 +113,8 @@ export default function TransferResultPage() {
           onClick={copyUuid}
           className="flex items-center gap-1 font-mono text-xs text-text-muted hover:text-text-primary"
         >
-          {transaction_uuid.slice(0, 8)}...{transaction_uuid.slice(-4)} 📋
+          {transaction_uuid.slice(0, 8)}...{transaction_uuid.slice(-4)}
+          <Copy size={16} className="text-current" />
         </button>
       </motion.div>
 

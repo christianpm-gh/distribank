@@ -1,6 +1,7 @@
 import type { Card } from '@/types/api.types'
 import { maskCardNumber, formatCurrency } from '@/lib/utils'
 import StatusBadge from '@/components/ui/StatusBadge'
+import { CreditCard, Lock } from 'lucide-react'
 
 type Props = {
   card: Card
@@ -31,12 +32,12 @@ export default function PhysicalCard({ card, variant = 'list', onClick }: Props)
       >
         {isBlocked && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-[rgba(239,68,68,0.08)]">
-            <span className="text-2xl text-status-error">🔒</span>
+            <Lock size={24} className="text-status-error" />
           </div>
         )}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-lg">{isCredit ? '💳' : '💳'}</span>
+            <CreditCard size={20} className="text-text-secondary" />
             <span className="font-mono text-sm text-text-primary">
               •••• {card.card_number.slice(-4)}
             </span>
@@ -61,7 +62,7 @@ export default function PhysicalCard({ card, variant = 'list', onClick }: Props)
     >
       {isBlocked && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-[rgba(239,68,68,0.08)]">
-          <span className="text-3xl text-status-error">🔒</span>
+          <Lock size={32} className="text-status-error" />
         </div>
       )}
       <p className="font-mono text-lg tracking-widest text-text-primary">
@@ -70,9 +71,7 @@ export default function PhysicalCard({ card, variant = 'list', onClick }: Props)
       <div className="mt-4 flex items-end justify-between">
         <div>
           <p className="text-sm font-semibold text-text-primary uppercase">
-            {card.card_number.slice(-4) === '0017' || card.card_number.slice(-4) === '0010'
-              ? 'NATALIA RUIZ'
-              : 'NATALIA RUIZ'}
+            NATALIA RUIZ
           </p>
           <p className="text-xs text-text-secondary">
             {typeLabel} {card.card_number.slice(-4) === '0011' || card.card_number.slice(-4) === '0018' ? 'Adicional' : 'Titular'}
