@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import PrivateRoute from './PrivateRoute'
+import AppShell from '@/components/layout/AppShell'
 import LoginPage from '@/pages/LoginPage'
 import HomePage from '@/pages/HomePage'
 import AccountDebitPage from '@/pages/AccountDebitPage'
@@ -20,16 +21,21 @@ export const router = createBrowserRouter([
   {
     element: <PrivateRoute />,
     children: [
-      { path: '/', element: <HomePage /> },
-      { path: '/accounts/debit', element: <AccountDebitPage /> },
-      { path: '/accounts/credit', element: <AccountCreditPage /> },
-      { path: '/accounts/:accountId/transactions', element: <TransactionHistoryPage /> },
-      { path: '/transactions/:uuid', element: <TransactionDetailPage /> },
-      { path: '/cards', element: <CardsPage /> },
-      { path: '/cards/:cardId', element: <CardDetailPage /> },
-      { path: '/transfer', element: <TransferPage /> },
-      { path: '/transfer/confirm', element: <TransferConfirmPage /> },
-      { path: '/transfer/result', element: <TransferResultPage /> },
+      {
+        element: <AppShell />,
+        children: [
+          { path: '/', element: <HomePage /> },
+          { path: '/accounts/debit', element: <AccountDebitPage /> },
+          { path: '/accounts/credit', element: <AccountCreditPage /> },
+          { path: '/accounts/:accountId/transactions', element: <TransactionHistoryPage /> },
+          { path: '/transactions/:uuid', element: <TransactionDetailPage /> },
+          { path: '/cards', element: <CardsPage /> },
+          { path: '/cards/:cardId', element: <CardDetailPage /> },
+          { path: '/transfer', element: <TransferPage /> },
+          { path: '/transfer/confirm', element: <TransferConfirmPage /> },
+          { path: '/transfer/result', element: <TransferResultPage /> },
+        ],
+      },
     ],
   },
 ])
