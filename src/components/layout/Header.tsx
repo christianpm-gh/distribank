@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, X } from 'lucide-react'
+import { ArrowLeft, X } from 'lucide-react'
 
 type Props = {
   title?: string
@@ -14,7 +14,7 @@ export default function Header({ title, variant = 'with-back', onAction, actionL
 
   if (variant === 'modal') {
     return (
-      <header className="flex h-14 items-center justify-end pl-14 pr-4 md:px-4">
+      <header className="flex h-14 items-center justify-end px-4">
         <button
           onClick={onClose ?? (() => navigate(-1))}
           className="text-text-secondary hover:text-text-primary"
@@ -26,12 +26,12 @@ export default function Header({ title, variant = 'with-back', onAction, actionL
   }
 
   return (
-    <header className="flex h-14 items-center pl-14 pr-4 md:px-4">
+    <header className="flex h-14 items-center px-4">
       <button
         onClick={() => navigate(-1)}
-        className="mr-3 text-text-secondary hover:text-text-primary"
+        className="mr-3 rounded-md p-1 text-text-secondary hover:bg-surface-elevated hover:text-text-primary transition-colors"
       >
-        <ChevronLeft size={20} className="text-current" />
+        <ArrowLeft size={24} className="text-current" />
       </button>
       <h1 className="flex-1 text-center font-sora text-base font-semibold text-text-primary">
         {title}
@@ -44,7 +44,7 @@ export default function Header({ title, variant = 'with-back', onAction, actionL
           {actionLabel}
         </button>
       ) : (
-        <span className="w-7" />
+        <span className="w-8" />
       )}
     </header>
   )
