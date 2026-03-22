@@ -33,7 +33,7 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
     onClose?.()
   }
 
-  const renderContent = (expanded: boolean) => (
+  const renderContent = (expanded: boolean, showToggle = true) => (
     <>
       <div className="px-5 py-6">
         {expanded
@@ -67,7 +67,7 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
       </nav>
 
       <div className="border-t border-surface-elevated px-3 py-4">
-        {expanded && onToggleCollapse && (
+        {expanded && onToggleCollapse && showToggle && (
           <button
             onClick={onToggleCollapse}
             className="mb-3 flex w-full items-center gap-3 rounded-md px-3 py-2 text-xs text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors"
@@ -79,7 +79,7 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
             {collapsed ? 'Expandir' : 'Colapsar'}
           </button>
         )}
-        {!expanded && onToggleCollapse && (
+        {!expanded && onToggleCollapse && showToggle && (
           <button
             onClick={onToggleCollapse}
             className="mb-3 flex w-full items-center justify-center rounded-md px-3 py-2 text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors"
@@ -144,7 +144,7 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={onClose} />
           <aside className="relative z-10 flex h-full w-[var(--sidebar-width)] flex-col border-r border-surface-elevated bg-surface-card">
-            {renderContent(true)}
+            {renderContent(true, false)}
           </aside>
         </div>
       )}
