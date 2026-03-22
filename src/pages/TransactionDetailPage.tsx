@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useTransactionDetail } from '@/hooks/useTransactions'
 import Header from '@/components/layout/Header'
 import SignedAmount from '@/components/ui/SignedAmount'
@@ -6,11 +6,31 @@ import StatusBadge from '@/components/ui/StatusBadge'
 import TransactionTypeChip from '@/components/ui/TransactionTypeChip'
 import TransactionTimeline from '@/components/transactions/TransactionTimeline'
 import { maskAccountNumber, maskCardNumber, formatDate } from '@/lib/utils'
-import { Copy } from 'lucide-react'
+import { Copy, ChevronLeft, ChevronRight } from 'lucide-react'
+
+type NavState = {
+  fromAllTransactions?: boolean
+  uuids?: string[]
+}
 
 export default function TransactionDetailPage() {
   const { uuid } = useParams()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const navState = location.state as NavState | null
   const { data, isLoading } = useTransactionDetail(uuid ?? '')
+
+  const hasNav = navState?.fromAllTransactions && navState.uuids && navState.uuids.length > 1
+  const currentIndex = hasNav ? navState.uuids!.indexOf(uuid ?? '') : -1
+  const hasPrev = hasNav && currentIndex > 0
+  const hasNext = hasNav && currentIndex < navState.uuids!.length - 1
+
+  const goTo = (index: number) => {
+    if (!navState?.uuids) return
+    navigate(`/transactions/${navState.uuids[index]}`, {
+      state: { fromAllTransactions: true, uuids: navState.uuids },
+    })
+  }
 
   if (isLoading) {
     return (
@@ -38,11 +58,33 @@ export default function TransactionDetailPage() {
       <Header title="Detalle de movimiento" />
 
       <div className="mx-auto max-w-2xl space-y-5 px-[var(--content-padding)]">
-        {/* Row 1: Amount + Status badge — centered */}
+        {/* Row 1: Amount + Status badge + nav arrows */}
         <div className="text-center">
           <SignedAmount amount={tx.amount} role={tx.rol_cuenta} size="lg" showCurrency />
-          <div className="mt-2">
+          <div className="mt-2 flex items-center justify-center gap-3">
+            {hasPrev ? (
+              <button
+                onClick={() => goTo(currentIndex - 1)}
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary hover:bg-surface-elevated hover:text-text-primary transition-colors"
+              >
+                <ChevronLeft size={14} className="text-current" />
+                <span className="hidden md:inline">Anterior</span>
+                <span className="md:hidden">Ant.</span>
+              </button>
+            ) : hasNav ? <span className="w-16" /> : null}
+
             <StatusBadge status={statusKey} />
+
+            {hasNext ? (
+              <button
+                onClick={() => goTo(currentIndex + 1)}
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-text-secondary hover:bg-surface-elevated hover:text-text-primary transition-colors"
+              >
+                <span className="hidden md:inline">Siguiente</span>
+                <span className="md:hidden">Sig.</span>
+                <ChevronRight size={14} className="text-current" />
+              </button>
+            ) : hasNav ? <span className="w-16" /> : null}
           </div>
         </div>
 
@@ -85,7 +127,7 @@ export default function TransactionDetailPage() {
           )}
         </div>
 
-        {/* Row 3: Timeline — centered (only for PENDING/FAILED/ROLLED_BACK) */}
+        {/* Row 3: Timeline */}
         {showTimeline && (
           <div className="rounded-lg border border-surface-elevated bg-surface-card p-4">
             <TransactionTimeline events={log_events} />
