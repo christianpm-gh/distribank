@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import SidebarNav from './SidebarNav'
 import { useProfile } from '@/hooks/useAccounts'
 import { getFirstName } from '@/lib/utils'
@@ -12,7 +11,6 @@ export default function AppShell() {
   const initial = firstName.charAt(0).toUpperCase()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [hintPlayed, setHintPlayed] = useState(false)
 
   const desktopMargin = sidebarCollapsed
     ? 'md:ml-[var(--sidebar-collapsed)]'
@@ -30,30 +28,13 @@ export default function AppShell() {
       />
 
       <main className={`flex-1 ml-0 ${desktopMargin} transition-all duration-200`}>
-        {/* Mobile swipe hint */}
-        <motion.button
+        {/* Mobile sidebar button */}
+        <button
           onClick={() => setDrawerOpen(true)}
-          className="fixed left-1 top-1/2 z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-surface-card/40 text-text-muted md:hidden"
-          initial={!hintPlayed ? { x: 0, opacity: 0.6 } : { opacity: 0.15 }}
-          animate={
-            !hintPlayed
-              ? {
-                  x: [0, 120, 0],
-                  opacity: [0.6, 0.8, 0.15],
-                  rotate: [0, 0, 0],
-                }
-              : { opacity: 0.15 }
-          }
-          transition={
-            !hintPlayed
-              ? { duration: 1.5, ease: 'easeInOut' }
-              : {}
-          }
-          onAnimationComplete={() => setHintPlayed(true)}
-          whileTap={{ opacity: 1, scale: 1.1 }}
+          className="fixed left-2 top-1/2 z-40 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-surface-elevated bg-surface-card/60 text-text-secondary hover:bg-surface-card hover:text-text-primary transition-colors md:hidden"
         >
           <ChevronRight size={18} className="text-current" />
-        </motion.button>
+        </button>
 
         <Outlet />
       </main>
