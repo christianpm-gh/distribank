@@ -14,7 +14,7 @@ export default function Header({ title, variant = 'with-back', onAction, actionL
 
   if (variant === 'modal') {
     return (
-      <header className="flex h-14 items-center justify-end px-4">
+      <header className="flex h-14 items-center justify-end pl-14 pr-4 md:px-4">
         <button
           onClick={onClose ?? (() => navigate(-1))}
           className="text-text-secondary hover:text-text-primary"
@@ -26,7 +26,7 @@ export default function Header({ title, variant = 'with-back', onAction, actionL
   }
 
   return (
-    <header className="flex h-14 items-center px-4">
+    <header className="flex h-14 items-center pl-14 pr-4 md:px-4">
       <button
         onClick={() => navigate(-1)}
         className="mr-3 text-text-secondary hover:text-text-primary"
