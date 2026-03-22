@@ -24,7 +24,7 @@ export default function SidebarNav({ customerName, customerInitial }: Props) {
   }
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 z-30 flex w-60 flex-col border-r border-surface-elevated bg-surface-card">
+    <aside className="fixed left-0 top-0 bottom-0 z-30 flex w-[var(--sidebar-width)] flex-col border-r border-surface-elevated bg-surface-card">
       <div className="px-5 py-6">
         <h2 className="font-sora text-xl font-bold text-text-primary">DistriBank</h2>
       </div>

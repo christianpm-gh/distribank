@@ -532,5 +532,24 @@ Componente de layout desktop que reemplaza a C-12 BottomNav. Presente en todas l
 
 ---
 
-*DistriBank Component System v1.0 — base para Figma*
+---
+
+## 5. Desktop Layout Tokens
+
+Tokens CSS adicionales para el layout desktop. Se definen en `src/index.css` dentro del bloque `@theme`.
+
+| Token | Valor | Uso |
+|---|---|---|
+| `layout.sidebar.width` | 240px | Sidebar expandido |
+| `layout.sidebar.collapsed` | 64px | Sidebar colapsado (solo íconos, ≤1024px) |
+| `layout.content.maxWidth` | 1280px | Ancho máximo del área de contenido |
+| `layout.panel.sm` | 280px | Panel acciones rápidas (HomePage col 3) |
+| `layout.panel.md` | 320px | Columna de cuentas (HomePage col 1) |
+| `layout.panel.lg` | 380px | Columna de tarjeta (AccountDetail) |
+| `layout.panel.xl` | 420px | Columna de tarjeta física (CardDetail) |
+| `layout.content.padding` | 24px | Padding horizontal del área de contenido |
+
+---
+
+*DistriBank Component System v2.0 — desktop-first*
 *Pendiente: definición de estados de error y skeleton loaders por componente (iteración siguiente)*

@@ -11,7 +11,7 @@ export default function AppShell() {
   return (
     <div className="flex min-h-screen">
       <SidebarNav customerName={firstName} customerInitial={initial} />
-      <main className="ml-60 flex-1">
+      <main className="ml-[var(--sidebar-width)] flex-1">
         <Outlet />
       </main>
     </div>
