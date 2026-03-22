@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Home, CreditCard, ArrowLeftRight, Receipt, LogOut } from 'lucide-react'
+import { Home, CreditCard, ArrowLeftRight, Receipt, LogOut, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 type Props = {
@@ -7,6 +7,8 @@ type Props = {
   customerInitial?: string
   isDrawerOpen?: boolean
   onClose?: () => void
+  collapsed?: boolean
+  onToggleCollapse?: () => void
 }
 
 const navItems: { label: string; icon: ReactNode; path: string }[] = [
@@ -16,7 +18,7 @@ const navItems: { label: string; icon: ReactNode; path: string }[] = [
   { label: 'Transferir', icon: <ArrowLeftRight size={20} className="text-current" />, path: '/transfer' },
 ]
 
-export default function SidebarNav({ customerName, customerInitial, isDrawerOpen, onClose }: Props) {
+export default function SidebarNav({ customerName, customerInitial, isDrawerOpen, onClose, collapsed = false, onToggleCollapse }: Props) {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -54,7 +56,7 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
                 isActive
                   ? 'border-l-2 border-brand-primary bg-surface-elevated text-text-primary'
                   : 'text-text-secondary hover:bg-surface-elevated hover:text-text-primary'
-              }`}
+              } ${!expanded ? 'justify-center' : ''}`}
               title={item.label}
             >
               {item.icon}
@@ -65,6 +67,30 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
       </nav>
 
       <div className="border-t border-surface-elevated px-3 py-4">
+        {expanded && onToggleCollapse && (
+          <button
+            onClick={onToggleCollapse}
+            className="mb-3 flex w-full items-center gap-3 rounded-md px-3 py-2 text-xs text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors"
+          >
+            {collapsed
+              ? <PanelLeftOpen size={16} className="text-current" />
+              : <PanelLeftClose size={16} className="text-current" />
+            }
+            {collapsed ? 'Expandir' : 'Colapsar'}
+          </button>
+        )}
+        {!expanded && onToggleCollapse && (
+          <button
+            onClick={onToggleCollapse}
+            className="mb-3 flex w-full items-center justify-center rounded-md px-3 py-2 text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors"
+            title={collapsed ? 'Expandir' : 'Colapsar'}
+          >
+            {collapsed
+              ? <PanelLeftOpen size={16} className="text-current" />
+              : <PanelLeftClose size={16} className="text-current" />
+            }
+          </button>
+        )}
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-primary text-sm font-bold text-white">
             {customerInitial || '?'}
@@ -91,21 +117,29 @@ export default function SidebarNav({ customerName, customerInitial, isDrawerOpen
     </>
   )
 
+  const desktopWidth = collapsed ? 'w-[var(--sidebar-collapsed)]' : 'w-[var(--sidebar-collapsed)] lg:w-[var(--sidebar-width)]'
+
   return (
     <>
-      {/* Desktop sidebar: collapsed at md, expanded at lg */}
-      <aside className="fixed left-0 top-0 bottom-0 z-30 hidden md:flex w-[var(--sidebar-collapsed)] lg:w-[var(--sidebar-width)] flex-col border-r border-surface-elevated bg-surface-card">
-        {/* Collapsed at md-lg: no labels */}
-        <div className="flex flex-col h-full lg:hidden">
-          {renderContent(false)}
-        </div>
-        {/* Expanded at lg+: with labels */}
-        <div className="hidden lg:flex flex-col h-full">
-          {renderContent(true)}
-        </div>
+      {/* Desktop sidebar */}
+      <aside className={`fixed left-0 top-0 bottom-0 z-30 hidden md:flex ${desktopWidth} flex-col border-r border-surface-elevated bg-surface-card transition-all duration-200`}>
+        {collapsed ? (
+          <div className="flex flex-col h-full">
+            {renderContent(false)}
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col h-full lg:hidden">
+              {renderContent(false)}
+            </div>
+            <div className="hidden lg:flex flex-col h-full">
+              {renderContent(true)}
+            </div>
+          </>
+        )}
       </aside>
 
-      {/* Mobile drawer: always expanded with labels */}
+      {/* Mobile drawer */}
       {isDrawerOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={onClose} />
