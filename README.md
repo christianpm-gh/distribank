@@ -1,5 +1,9 @@
 # DistriBank Frontend
 
+<p align="center">
+  <img src="src/assets/distribank-logo-readme.svg" alt="DistriBank" width="720" />
+</p>
+
 Frontend SPA para **DistriBank** — sistema bancario distribuido académico.
 
 Aplicación completa del rol **Cliente** con dark mode nativo, mocks MSW y lista para conectarse a un backend NestJS.
