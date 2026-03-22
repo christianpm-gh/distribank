@@ -52,12 +52,12 @@ export default function CardControlSwitch({ card, onToggle, isLoading = false }:
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setShowModal(false)}
           />
-          <div className="relative z-10 mx-4 mb-4 w-full max-w-sm rounded-xl bg-surface-elevated p-6 sm:mb-0">
+          <div className="relative z-10 mx-4 w-full max-w-sm rounded-xl bg-surface-elevated p-6">
             <h3 className="font-sora text-base font-semibold text-text-primary">{modalTitle}</h3>
             <p className="mt-2 text-sm text-text-secondary">{modalDescription}</p>
             <div className="mt-4 flex gap-3">
