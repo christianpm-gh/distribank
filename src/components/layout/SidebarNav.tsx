@@ -5,6 +5,8 @@ import type { ReactNode } from 'react'
 type Props = {
   customerName?: string
   customerInitial?: string
+  isDrawerOpen?: boolean
+  onClose?: () => void
 }
 
 const navItems: { label: string; icon: ReactNode; path: string }[] = [
@@ -13,7 +15,7 @@ const navItems: { label: string; icon: ReactNode; path: string }[] = [
   { label: 'Transferir', icon: <ArrowLeftRight size={20} className="text-current" />, path: '/transfer' },
 ]
 
-export default function SidebarNav({ customerName, customerInitial }: Props) {
+export default function SidebarNav({ customerName, customerInitial, isDrawerOpen, onClose }: Props) {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -23,10 +25,16 @@ export default function SidebarNav({ customerName, customerInitial }: Props) {
     window.location.reload()
   }
 
-  return (
-    <aside className="fixed left-0 top-0 bottom-0 z-30 flex w-[var(--sidebar-width)] flex-col border-r border-surface-elevated bg-surface-card">
+  const handleNav = (path: string) => {
+    navigate(path)
+    onClose?.()
+  }
+
+  const sidebarContent = (
+    <>
       <div className="px-5 py-6">
-        <h2 className="font-sora text-xl font-bold text-text-primary">DistriBank</h2>
+        <h2 className="font-sora text-xl font-bold text-text-primary lg:block hidden">DistriBank</h2>
+        <h2 className="font-sora text-xl font-bold text-text-primary lg:hidden text-center">D</h2>
       </div>
 
       <nav className="flex-1 space-y-1 px-3">
@@ -38,15 +46,16 @@ export default function SidebarNav({ customerName, customerInitial }: Props) {
           return (
             <button
               key={item.path}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNav(item.path)}
               className={`flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors ${
                 isActive
                   ? 'border-l-2 border-brand-primary bg-surface-elevated text-text-primary'
                   : 'text-text-secondary hover:bg-surface-elevated hover:text-text-primary'
               }`}
+              title={item.label}
             >
               {item.icon}
-              <span>{item.label}</span>
+              <span className="hidden lg:inline">{item.label}</span>
             </button>
           )
         })}
@@ -57,7 +66,7 @@ export default function SidebarNav({ customerName, customerInitial }: Props) {
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-primary text-sm font-bold text-white">
             {customerInitial || '?'}
           </div>
-          <div className="min-w-0 flex-1">
+          <div className="hidden lg:block min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-text-primary">
               {customerName || 'Usuario'}
             </p>
@@ -65,13 +74,32 @@ export default function SidebarNav({ customerName, customerInitial }: Props) {
           </div>
           <button
             onClick={handleLogout}
-            className="shrink-0 text-text-muted hover:text-text-primary transition-colors"
+            className="hidden lg:block shrink-0 text-text-muted hover:text-text-primary transition-colors"
             title="Cerrar sesión"
           >
             <LogOut size={18} className="text-current" />
           </button>
         </div>
       </div>
-    </aside>
+    </>
+  )
+
+  return (
+    <>
+      {/* Desktop/Tablet sidebar: visible at md+ */}
+      <aside className="fixed left-0 top-0 bottom-0 z-30 hidden md:flex w-[var(--sidebar-collapsed)] lg:w-[var(--sidebar-width)] flex-col border-r border-surface-elevated bg-surface-card">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile drawer overlay */}
+      {isDrawerOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+          <aside className="relative z-10 flex h-full w-[var(--sidebar-width)] flex-col border-r border-surface-elevated bg-surface-card">
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+    </>
   )
 }

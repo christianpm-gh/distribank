@@ -57,7 +57,7 @@ export default function CardDetailPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-[var(--panel-xl)_1fr] gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[var(--panel-xl)_1fr]">
           {/* Left column: Card visual + control */}
           <div className="space-y-5">
             <PhysicalCard card={card} variant="detail" />

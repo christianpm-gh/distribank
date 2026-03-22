@@ -39,7 +39,7 @@ export default function TransactionDetailPage() {
 
       <div className="mx-auto max-w-[var(--content-max-width)] px-[var(--content-padding)]">
         {showTimeline ? (
-          <div className="grid grid-cols-[1fr_360px] gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
             {/* Left column: Timeline */}
             <div className="rounded-lg border border-surface-elevated bg-surface-card p-4">
               <TransactionTimeline events={log_events} />

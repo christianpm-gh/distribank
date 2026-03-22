@@ -28,7 +28,7 @@ export default function HomePage() {
         <h1 className="mb-6 font-sora text-xl font-semibold text-text-primary">Panel principal</h1>
 
         {isLoading ? (
-          <div className="grid grid-cols-[var(--panel-md)_1fr_var(--panel-sm)] gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[var(--panel-md)_1fr] xl:grid-cols-[var(--panel-md)_1fr_var(--panel-sm)]">
             <div className="space-y-4">
               <div className="h-44 animate-pulse rounded-lg bg-surface-card" />
               <div className="h-44 animate-pulse rounded-lg bg-surface-card" />
@@ -37,7 +37,7 @@ export default function HomePage() {
             <div className="h-40 animate-pulse rounded-lg bg-surface-card" />
           </div>
         ) : (
-          <div className="grid grid-cols-[var(--panel-md)_1fr_var(--panel-sm)] gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[var(--panel-md)_1fr] xl:grid-cols-[var(--panel-md)_1fr_var(--panel-sm)]">
             {/* Column 1: Account cards */}
             <div className="space-y-4">
               {checking && (

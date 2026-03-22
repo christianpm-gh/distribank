@@ -548,6 +548,27 @@ Tokens CSS adicionales para el layout desktop. Se definen en `src/index.css` den
 | `layout.panel.lg` | 380px | Columna de tarjeta (AccountDetail) |
 | `layout.panel.xl` | 420px | Columna de tarjeta física (CardDetail) |
 | `layout.content.padding` | 24px | Padding horizontal del área de contenido |
+| `layout.breakpoint.collapse` | 1024px (lg) | Sidebar colapsa a icon-only |
+| `layout.breakpoint.mobile` | 768px (md) | Sidebar se oculta, drawer con hamburger |
+
+### Comportamiento responsivo del sidebar (C-14)
+
+| Viewport | Estado | Width sidebar | Content margin-left |
+|---|---|---|---|
+| >= 1024px (lg) | Expandido, labels visibles | 240px | 240px |
+| 768–1023px (md–lg) | Colapsado, solo íconos | 64px | 64px |
+| < 768px | Oculto, drawer overlay con hamburger | 0 (overlay) | 0 |
+
+### Degradación de grids por página
+
+| Página | xl (1280+) | lg (1024+) | md (768+) | < 768px |
+|---|---|---|---|---|
+| S-02 Home | 3 cols | 2 cols | 1 col | 1 col |
+| S-03/S-04 Cuentas | 2 cols | 2 cols | 1 col | 1 col |
+| S-06 Detalle Tx | 2 cols | 2 cols | 1 col | 1 col |
+| S-07 Tarjetas | 3 cols grid | 2 cols grid | 2 cols grid | 1 col |
+| S-08 Detalle Tarjeta | 2 cols | 2 cols | 1 col | 1 col |
+| S-09/S-10/S-11 Transfer | max-w 640px centrado | centrado | centrado | centrado |
 
 ---
 

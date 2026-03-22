@@ -22,7 +22,7 @@ export default function AccountCreditPage() {
       <Header title="Cuenta Crédito" />
 
       <div className="mx-auto max-w-[var(--content-max-width)] px-[var(--content-padding)]">
-        <div className="grid grid-cols-[var(--panel-lg)_1fr] gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[var(--panel-lg)_1fr]">
           {/* Left column: Account info */}
           <div className="space-y-5">
             <AccountCard account={account} size="compact" />
