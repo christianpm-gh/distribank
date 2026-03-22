@@ -29,7 +29,7 @@ export default function HomePage() {
         <h1 className="mb-4 font-sora text-xl font-semibold text-text-primary">Panel principal</h1>
 
         {/* Quick actions — always first on mobile */}
-        <div className="mb-6 flex gap-3">
+        <div className="mb-6 flex flex-col gap-3 md:flex-row">
           <button
             onClick={() => navigate('/transfer')}
             className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-brand-primary/80"
@@ -88,12 +88,12 @@ export default function HomePage() {
                 </button>
               </div>
               {recentActivity.length > 0 ? (
-                <div className="divide-y divide-surface-elevated">
+                <div className="space-y-3">
                   {recentActivity.map((tx) => (
                     <TransactionRow
                       key={tx.id}
                       transaction={tx}
-                      size="compact"
+                      variant="card"
                       sourceAccountType={tx._accountType}
                       onClick={() => navigate(`/transactions/${tx.transaction_uuid}`)}
                     />

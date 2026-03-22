@@ -19,7 +19,7 @@ export default function AccountCard({ account, size = 'full', onClick }: Props) 
   return (
     <div
       onClick={onClick}
-      className={`max-w-sm rounded-lg border border-surface-elevated bg-surface-card shadow-[0_4px_24px_rgba(0,0,0,0.3)] transition-all duration-200 hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:-translate-y-0.5 ${
+      className={`rounded-lg border border-surface-elevated bg-surface-card shadow-[0_4px_24px_rgba(0,0,0,0.3)] transition-all duration-200 hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:-translate-y-0.5 ${
         size === 'full' ? 'p-6' : 'p-4'
       } ${onClick ? 'cursor-pointer' : ''}`}
     >
