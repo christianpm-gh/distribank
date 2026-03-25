@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model customers {
+  id         BigInt   @id @default(autoincrement())
+  name       String   @db.VarChar(100)
+  curp       String   @unique @db.VarChar(100)
+  email      String?  @unique @db.VarChar(100)
+  password   String   @db.VarChar(100)
+  created_at DateTime @default(now())
+
+  customer_accounts customer_accounts?
+}
+
+model accounts {
+  id                     BigInt    @id @default(autoincrement())
+  account_number         String    @unique @db.VarChar(20)
+  account_type           String    @db.VarChar(10)
+  balance                Decimal   @default(0) @db.Decimal(15, 2)
+  credit_limit           Decimal?  @db.Decimal(15, 2)
+  available_credit       Decimal?  @db.Decimal(15, 2)
+  overdraft_limit        Decimal?  @db.Decimal(15, 2)
+  last_limit_increase_at DateTime?
+  status                 String    @default("ACTIVE") @db.VarChar(10)
+  week_transactions      BigInt    @default(0)
+  created_at             DateTime  @default(now())
+
+  cards                    cards[]
+  transactions_from        transactions[] @relation("from_account")
+  transactions_to          transactions[] @relation("to_account")
+  customer_account_checking customer_accounts? @relation("checking")
+  customer_account_credit   customer_accounts? @relation("credit")
+}
+
+model customer_accounts {
+  customer_id         BigInt @id
+  checking_account_id BigInt? @unique
+  credit_account_id   BigInt? @unique
+
+  customer        customers @relation(fields: [customer_id], references: [id])
+  checking_account accounts? @relation("checking", fields: [checking_account_id], references: [id])
+  credit_account   accounts? @relation("credit", fields: [credit_account_id], references: [id])
+}
+
+model cards {
+  id              BigInt   @id @default(autoincrement())
+  account_id      BigInt
+  card_number     String   @unique @db.VarChar(16)
+  card_type       String   @db.VarChar(10)
+  cvv             String   @db.VarChar(4)
+  expiration_date DateTime @db.Date
+  status          String   @default("ACTIVE") @db.VarChar(10)
+  daily_limit     Decimal? @db.Decimal(15, 2)
+  issued_at       DateTime @default(now())
+
+  account      accounts       @relation(fields: [account_id], references: [id])
+  transactions transactions[]
+}
+
+model transactions {
+  id               BigInt    @id @default(autoincrement())
+  transaction_uuid String    @unique @default(uuid()) @db.Uuid
+  from_account_id  BigInt
+  to_account_id    BigInt
+  card_id          BigInt?
+  amount           Decimal   @db.Decimal(15, 2)
+  transaction_type String    @db.VarChar(20)
+  status           String    @default("PENDING") @db.VarChar(15)
+  initiated_at     DateTime  @default(now())
+  completed_at     DateTime?
+
+  from_account    accounts          @relation("from_account", fields: [from_account_id], references: [id])
+  to_account      accounts          @relation("to_account", fields: [to_account_id], references: [id])
+  card            cards?             @relation(fields: [card_id], references: [id])
+  transaction_log transaction_log[]
+}
+
+model transaction_log {
+  id             BigInt   @id @default(autoincrement())
+  transaction_id BigInt
+  event_type     String   @db.VarChar(30)
+  details        Json?
+  created_at     DateTime @default(now())
+
+  transaction transactions @relation(fields: [transaction_id], references: [id])
+}
