@@ -1,3 +1,6 @@
+// Permitir certificados auto-firmados en Supabase durante desarrollo
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';

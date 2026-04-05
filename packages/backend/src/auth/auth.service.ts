@@ -33,11 +33,13 @@ export class AuthService {
   }
 
   private async findCustomerByEmail(email: string) {
-    for (const prisma of this.nodeRouter.getAllNodes()) {
-      const customer = await prisma.customers.findUnique({
-        where: { email },
-      });
-      if (customer) return customer;
+    for (const prisma of this.nodeRouter.getHealthyNodes()) {
+      try {
+        const customer = await prisma.customers.findUnique({ where: { email } });
+        if (customer) return customer;
+      } catch {
+        // nodo inactivo en tiempo de ejecución, continuar con el siguiente
+      }
     }
     return null;
   }

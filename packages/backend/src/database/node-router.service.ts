@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 
 export type NodeId = 'nodo-a' | 'nodo-b' | 'nodo-c';
 
 @Injectable()
 export class NodeRouterService {
+  private readonly logger = new Logger(NodeRouterService.name);
   private readonly prismaInstances: Record<NodeId, PrismaService>;
 
   constructor(
@@ -35,17 +36,34 @@ export class NodeRouterService {
     return this.prismaInstances[node];
   }
 
+  /** Todos los nodos, incluyendo los que no conectaron. */
   getAllNodes(): PrismaService[] {
     return Object.values(this.prismaInstances);
   }
 
-  async findAccountNodeByNumber(accountNumber: string): Promise<{ node: NodeId; prisma: PrismaService } | null> {
+  /** Solo nodos que conectaron correctamente. Usar para búsquedas multi-nodo. */
+  getHealthyNodes(): PrismaService[] {
+    return Object.values(this.prismaInstances).filter((p) => p.isConnected);
+  }
+
+  /** Busca en qué nodo sano existe un account_number dado. */
+  async findAccountNodeByNumber(
+    accountNumber: string,
+  ): Promise<{ node: NodeId; prisma: PrismaService } | null> {
     for (const [node, prisma] of Object.entries(this.prismaInstances)) {
-      const account = await prisma.accounts.findUnique({
-        where: { account_number: accountNumber },
-      });
-      if (account) {
-        return { node: node as NodeId, prisma };
+      if (!prisma.isConnected) {
+        this.logger.warn(`Saltando nodo inactivo: ${node}`);
+        continue;
+      }
+      try {
+        const account = await prisma.accounts.findUnique({
+          where: { account_number: accountNumber },
+        });
+        if (account) {
+          return { node: node as NodeId, prisma };
+        }
+      } catch (err) {
+        this.logger.warn(`Error al buscar en nodo ${node}: ${(err as Error).message}`);
       }
     }
     return null;

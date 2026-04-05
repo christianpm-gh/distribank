@@ -1,7 +1,21 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 
-const prisma = new PrismaClient();
+// Cargar .env del directorio packages/backend
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+// Natalia es customer_id=27, 27%3=0 → Nodo A
+const nodeAUrl = process.env.NODE_A_DATABASE_URL;
+if (!nodeAUrl) {
+  console.error('NODE_A_DATABASE_URL no está definida en .env');
+  process.exit(1);
+}
+
+const prisma = new PrismaClient({
+  datasources: { db: { url: nodeAUrl } },
+});
 
 async function main() {
   console.log('Seeding Natalia Ruiz Castillo (customer_id=27, Nodo A)...');
