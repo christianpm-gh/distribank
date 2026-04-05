@@ -2,13 +2,13 @@
 
 ## Distribución de nodos
 
-| Nodo | Infraestructura | Criterio | SGBD |
-|---|---|---|---|
-| Nodo A | Laptop / VM | `customer_id % 3 = 0` | PostgreSQL 16 |
-| Nodo B | Laptop / VM | `customer_id % 3 = 1` | PostgreSQL 16 |
-| Nodo C | Supabase | `customer_id % 3 = 2` | PostgreSQL (Supabase) |
+| Nodo | Infraestructura | Región | Criterio | SGBD |
+|---|---|---|---|---|
+| Nodo A | Supabase | South America (São Paulo) | `customer_id % 3 = 0` | PostgreSQL 17 |
+| Nodo B | Supabase | US East (N. Virginia) | `customer_id % 3 = 1` | PostgreSQL 17 |
+| Nodo C | Supabase | (existente) | `customer_id % 3 = 2` | PostgreSQL 17 |
 
-Cada nodo ejecuta el mismo DDL (`00_ddl_base.sql`) y almacena solo los datos de sus clientes propietarios.
+Los 3 nodos son proyectos Supabase independientes en regiones distintas. Cada nodo ejecuta el mismo DDL (`00_ddl_base.sql`) y almacena solo los datos de sus clientes propietarios. Nodo C aloja adicionalmente el schema `distribank_vip_customers`.
 
 **Cliente de demo (Natalia, id=27):** `27 % 3 = 0` → **Nodo A**.
 
@@ -98,17 +98,48 @@ Réplica de datos de clientes VIP para failover y consultas agregadas.
 
 ---
 
-## FK inter-nodo
+## FK inter-nodo — Estado actual
 
-La FK `fk_transactions_to_account` (`to_account_id → accounts.id`) **debe eliminarse o deferirse** para transacciones cross-nodo, ya que la cuenta destino vive en otro nodo.
+La FK `fk_transactions_to_account` (`to_account_id → accounts.id`) ha sido **eliminada en los 3 nodos Supabase**. Las transacciones cross-nodo no pueden respetar esta FK localmente porque la cuenta destino vive en otro nodo.
 
-El DDL base incluye esta nota:
+La integridad referencial es responsabilidad del coordinador SAGA del backend.
+
+**Instrucción al aplicar DDL en Nodo A y B** (después de `00_ddl_base.sql`):
 ```sql
--- NOTA DISTRIBUIDA: La FK fk_transactions_to_account sobre to_account_id
--- se mantiene aquí porque los datos de seed son intra-nodo.
--- En producción, las transacciones cross-nodo requieren eliminar o
--- deferir esta FK, delegando la integridad referencial al coordinador
--- de transacciones distribuidas (2PC/SAGA).
+ALTER TABLE transactions DROP CONSTRAINT IF EXISTS fk_transactions_to_account;
+```
+
+**Nodo C:** La FK fue eliminada vía MCP de Supabase en el proyecto `cllzymmcacyohsjuwibe`.
+
+---
+
+## Configuración Supabase — Variables de entorno
+
+Formato de conexión directa (puerto 5432, recomendado para Prisma):
+```
+NODE_A_DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[REF-A].supabase.co:5432/postgres?sslmode=require
+NODE_B_DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[REF-B].supabase.co:5432/postgres?sslmode=require
+NODE_C_DATABASE_URL=postgresql://postgres:[PASSWORD]@db.cllzymmcacyohsjuwibe.supabase.co:5432/postgres?sslmode=require
+```
+
+**Obtener la connection string:**
+Supabase Dashboard → Settings → Database → Connection string → **URI** (sección "Direct connection").
+
+**⚠ No usar el pooler (puerto 6543)** con Prisma en modo backend long-lived. El pooler (PgBouncer) está optimizado para serverless/edge functions.
+
+**Limitación free tier:** Supabase permite 2 proyectos activos por organización. Para 3 nodos se puede usar Supabase Pro ($25/mes) o crear proyectos en organizaciones gratuitas separadas.
+
+---
+
+## Reset de secuencias post-seed (Nodo A)
+
+Tras aplicar el seed con IDs fijos, ejecutar en Nodo A para evitar colisiones con inserts futuros:
+```sql
+SELECT setval('customers_id_seq', (SELECT MAX(id) FROM customers) + 100);
+SELECT setval('accounts_id_seq', (SELECT MAX(id) FROM accounts) + 100);
+SELECT setval('cards_id_seq', (SELECT MAX(id) FROM cards) + 100);
+SELECT setval('transactions_id_seq', (SELECT MAX(id) FROM transactions) + 100);
+SELECT setval('transaction_log_id_seq', (SELECT MAX(id) FROM transaction_log) + 100);
 ```
 
 ---
@@ -135,15 +166,13 @@ Para transfers, también necesita resolver el nodo de la cuenta destino:
 
 ## Conexiones de BD
 
-El backend NestJS necesita **3 conexiones Prisma** (o 3 pools pg):
+El backend NestJS usa **3 instancias de PrismaService** (una por nodo), ya implementadas en `src/database/database.module.ts`:
 
 ```typescript
-// Ejemplo con pg pools
-const pools = {
-  'nodo-a': new Pool({ connectionString: process.env.NODE_A_URL }),
-  'nodo-b': new Pool({ connectionString: process.env.NODE_B_URL }),
-  'nodo-c': new Pool({ connectionString: process.env.NODE_C_URL }),
-};
+// DatabaseModule crea una instancia por nodo con la URL del .env
+new PrismaService(config.getOrThrow('NODE_A_DATABASE_URL'))  // → Nodo A (Supabase São Paulo)
+new PrismaService(config.getOrThrow('NODE_B_DATABASE_URL'))  // → Nodo B (Supabase US East)
+new PrismaService(config.getOrThrow('NODE_C_DATABASE_URL'))  // → Nodo C (Supabase, proyecto existente)
 ```
 
-Para Prisma, se pueden usar múltiples instancias con diferentes `datasource url`.
+`NodeRouterService.getPrismaForCustomer(id)` selecciona automáticamente la instancia correcta según `customer_id % 3`.

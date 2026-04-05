@@ -9,7 +9,7 @@
 | Validación | class-validator (DTOs tipados) |
 | ORM | Prisma (soporte multi-schema PostgreSQL) |
 | Driver directo | pg (queries SAGA inter-nodo) |
-| Base de datos | PostgreSQL 16 (3 nodos distribuidos) |
+| Base de datos | PostgreSQL 17 — 3 nodos Supabase en distintas regiones |
 
 ## Stack del frontend (ya implementado)
 
@@ -86,6 +86,19 @@ Los mocks MSW simulan estos delays. El backend real debería estar dentro de est
 ## Rol del usuario
 
 El frontend implementa **un solo rol: Cliente** (usuario normal). No hay dashboard de admin ni rol de Soporte en este frontend. El campo `role` del JWT se espera como `"customer"`.
+
+## Variables de entorno del backend
+
+```env
+# Conexión directa Supabase (puerto 5432, sslmode=require obligatorio)
+NODE_A_DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[REF-A].supabase.co:5432/postgres?sslmode=require
+NODE_B_DATABASE_URL=postgresql://postgres:[PASSWORD]@db.[REF-B].supabase.co:5432/postgres?sslmode=require
+NODE_C_DATABASE_URL=postgresql://postgres:[PASSWORD]@db.cllzymmcacyohsjuwibe.supabase.co:5432/postgres?sslmode=require
+JWT_SECRET=...
+JWT_EXPIRES_IN=3600
+```
+
+Ver `packages/backend/.env.example` para el template completo con instrucciones.
 
 ## Idioma
 

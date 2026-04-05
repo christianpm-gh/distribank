@@ -20,7 +20,7 @@ npm install
 
 # Backend (puerto 3000)
 cd packages/backend
-cp .env.example .env  # configurar URLs de PostgreSQL
+cp .env.example .env  # completar con URLs de Supabase
 npm run start:dev
 
 # Frontend (puerto 5173)
@@ -40,13 +40,16 @@ npm run dev
 | Package | Stack | Puerto |
 |---|---|---|
 | `packages/frontend` | React 19, Vite 8, Tailwind v4, MSW | 5173 |
-| `packages/backend` | NestJS 11, Prisma 6, PostgreSQL 16 | 3000 |
+| `packages/backend` | NestJS 11, Prisma 6, PostgreSQL 17 | 3000 |
 
 ## Base de datos distribuida
 
-3 nodos PostgreSQL particionados por `customer_id % 3`:
-- **Nodo A** (local): `customer_id % 3 = 0` (incluye Natalia, id=27)
-- **Nodo B** (local): `customer_id % 3 = 1`
-- **Nodo C** (Supabase): `customer_id % 3 = 2` + schema VIP
+3 proyectos Supabase en regiones distintas, particionados por `customer_id % 3`:
 
-Ver `packages/frontend/docs/backend-specs/` para especificación completa.
+| Nodo | Región | Criterio | Proyecto |
+|---|---|---|---|
+| **Nodo A** | South America (São Paulo) | `customer_id % 3 = 0` — incluye Natalia (id=27) | Por crear |
+| **Nodo B** | US East (N. Virginia) | `customer_id % 3 = 1` | Por crear |
+| **Nodo C** | Actual | `customer_id % 3 = 2` + schema VIP | `cllzymmcacyohsjuwibe` ✓ |
+
+Ver `packages/backend/README.md` para instrucciones de setup de los 3 nodos.
