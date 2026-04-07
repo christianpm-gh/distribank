@@ -2,6 +2,8 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { NodeRouterService } from '../database/node-router.service';
 import { CreateTransferDto } from './dto/create-transfer.dto';
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 @Injectable()
 export class TransfersService {
   constructor(private readonly nodeRouter: NodeRouterService) {}
@@ -89,15 +91,22 @@ export class TransfersService {
       },
     });
 
-    // Create log events
+    // Create log events con delay para visualizar saga en tiempo real
     const now = new Date();
-    await prisma.transaction_log.createMany({
-      data: [
-        { transaction_id: tx.id, event_type: 'INITIATED', created_at: now, details: { node_id: node } },
-        { transaction_id: tx.id, event_type: 'DEBIT_APPLIED', created_at: new Date(now.getTime() + 1000), details: { node_id: node } },
-        { transaction_id: tx.id, event_type: 'CREDIT_APPLIED', created_at: new Date(now.getTime() + 2000), details: { node_id: node } },
-        { transaction_id: tx.id, event_type: 'COMPLETED', created_at: new Date(now.getTime() + 3000), details: { node_id: node } },
-      ],
+    await prisma.transaction_log.create({
+      data: { transaction_id: tx.id, event_type: 'INITIATED', created_at: now, details: { node_id: node } },
+    });
+    await sleep(3000);
+    await prisma.transaction_log.create({
+      data: { transaction_id: tx.id, event_type: 'DEBIT_APPLIED', created_at: new Date(now.getTime() + 3000), details: { node_id: node } },
+    });
+    await sleep(3000);
+    await prisma.transaction_log.create({
+      data: { transaction_id: tx.id, event_type: 'CREDIT_APPLIED', created_at: new Date(now.getTime() + 6000), details: { node_id: node } },
+    });
+    await sleep(3000);
+    await prisma.transaction_log.create({
+      data: { transaction_id: tx.id, event_type: 'COMPLETED', created_at: new Date(now.getTime() + 9000), details: { node_id: node } },
     });
 
     // Update balances
@@ -139,12 +148,13 @@ export class TransfersService {
       },
     });
 
-    // Step 2: Log INITIATED + DEBIT_APPLIED on origin
-    await prismaOrigin.transaction_log.createMany({
-      data: [
-        { transaction_id: tx.id, event_type: 'INITIATED', created_at: now, details: { node_id: originNode } },
-        { transaction_id: tx.id, event_type: 'DEBIT_APPLIED', created_at: new Date(now.getTime() + 1000), details: { node_id: originNode } },
-      ],
+    // Step 2: Log INITIATED + DEBIT_APPLIED on origin (con delay)
+    await prismaOrigin.transaction_log.create({
+      data: { transaction_id: tx.id, event_type: 'INITIATED', created_at: now, details: { node_id: originNode } },
+    });
+    await sleep(3000);
+    await prismaOrigin.transaction_log.create({
+      data: { transaction_id: tx.id, event_type: 'DEBIT_APPLIED', created_at: new Date(now.getTime() + 3000), details: { node_id: originNode } },
     });
 
     // Step 3: Debit from origin
@@ -160,12 +170,14 @@ export class TransfersService {
         data: { balance: { increment: dto.amount } },
       });
 
-      // Step 5: Log CREDIT_APPLIED + COMPLETED
-      await prismaOrigin.transaction_log.createMany({
-        data: [
-          { transaction_id: tx.id, event_type: 'CREDIT_APPLIED', created_at: new Date(now.getTime() + 2000), details: { node_id: destNode } },
-          { transaction_id: tx.id, event_type: 'COMPLETED', created_at: new Date(now.getTime() + 3000), details: { node_id: originNode } },
-        ],
+      // Step 5: Log CREDIT_APPLIED + COMPLETED (con delay)
+      await sleep(3000);
+      await prismaOrigin.transaction_log.create({
+        data: { transaction_id: tx.id, event_type: 'CREDIT_APPLIED', created_at: new Date(now.getTime() + 6000), details: { node_id: destNode } },
+      });
+      await sleep(3000);
+      await prismaOrigin.transaction_log.create({
+        data: { transaction_id: tx.id, event_type: 'COMPLETED', created_at: new Date(now.getTime() + 9000), details: { node_id: originNode } },
       });
 
       await prismaOrigin.transactions.update({
@@ -185,11 +197,13 @@ export class TransfersService {
         data: { balance: { increment: dto.amount } },
       });
 
-      await prismaOrigin.transaction_log.createMany({
-        data: [
-          { transaction_id: tx.id, event_type: 'FAILED', created_at: new Date(now.getTime() + 2000), details: { node_id: destNode } },
-          { transaction_id: tx.id, event_type: 'COMPENSATED', created_at: new Date(now.getTime() + 3000), details: { node_id: originNode } },
-        ],
+      await sleep(3000);
+      await prismaOrigin.transaction_log.create({
+        data: { transaction_id: tx.id, event_type: 'FAILED', created_at: new Date(now.getTime() + 6000), details: { node_id: destNode } },
+      });
+      await sleep(3000);
+      await prismaOrigin.transaction_log.create({
+        data: { transaction_id: tx.id, event_type: 'COMPENSATED', created_at: new Date(now.getTime() + 9000), details: { node_id: originNode } },
       });
 
       await prismaOrigin.transactions.update({
