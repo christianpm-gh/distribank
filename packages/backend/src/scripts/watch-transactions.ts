@@ -88,12 +88,17 @@ class NodeSubscriber extends EventEmitter {
   }
 
   async start(): Promise<void> {
-    this.client = new Client({
-      connectionString: this.connectionString,
-      ssl: { rejectUnauthorized: false },
-    });
-
-    await this.client.connect();
+    // Intentar con SSL primero; si falla (nodo local), reconectar sin SSL
+    try {
+      this.client = new Client({
+        connectionString: this.connectionString,
+        ssl: { rejectUnauthorized: false },
+      });
+      await this.client.connect();
+    } catch {
+      this.client = new Client({ connectionString: this.connectionString });
+      await this.client.connect();
+    }
     this.connected = true;
 
     await this.client.query(`LISTEN ${CHANNEL}`);
