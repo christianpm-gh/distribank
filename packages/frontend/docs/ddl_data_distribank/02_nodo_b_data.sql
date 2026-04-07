@@ -11,7 +11,7 @@
 -- VIPs del nodo:    1, 10, 13, 19, 25, 28  (week_tx ≥ 3)
 -- =============================================================================
 
-BEGIN;
+-- BEGIN;
 
 -- -----------------------------------------------------------------------------
 -- customers
@@ -241,4 +241,4 @@ SELECT setval('cards_id_seq',           (SELECT MAX(id) FROM cards));
 SELECT setval('transactions_id_seq',    (SELECT MAX(id) FROM transactions));
 SELECT setval('transaction_log_id_seq', (SELECT MAX(id) FROM transaction_log));
 
-COMMIT;
+-- COMMIT;

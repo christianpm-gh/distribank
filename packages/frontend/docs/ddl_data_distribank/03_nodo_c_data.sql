@@ -15,7 +15,7 @@
 --   Beatriz(11): tx=3, Iván(20): tx=6, Tomás(26): tx=5
 -- =============================================================================
 
-BEGIN;
+-- BEGIN;
 
 -- -----------------------------------------------------------------------------
 -- customers
@@ -251,4 +251,4 @@ SELECT setval('cards_id_seq',           (SELECT MAX(id) FROM cards));
 SELECT setval('transactions_id_seq',    (SELECT MAX(id) FROM transactions));
 SELECT setval('transaction_log_id_seq', (SELECT MAX(id) FROM transaction_log));
 
-COMMIT;
+-- COMMIT;
