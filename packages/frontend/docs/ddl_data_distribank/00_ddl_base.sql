@@ -343,3 +343,5 @@ CREATE INDEX idx_transactions_status_time    ON transactions (status, initiated_
 CREATE INDEX idx_transaction_log_txn         ON transaction_log (transaction_id, created_at);
 CREATE INDEX idx_transaction_log_event_type  ON transaction_log (event_type);
 CREATE INDEX idx_transaction_log_created_at  ON transaction_log (created_at);
+
+ALTER TABLE transactions DROP CONSTRAINT IF EXISTS fk_transactions_to_account;
