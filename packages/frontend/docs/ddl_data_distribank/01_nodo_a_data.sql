@@ -10,7 +10,7 @@
 -- Logs:             1–55
 -- =============================================================================
 
-BEGIN;
+-- BEGIN;
 
 -- -----------------------------------------------------------------------------
 -- customers
@@ -253,4 +253,4 @@ SELECT setval('cards_id_seq',           (SELECT MAX(id) FROM cards));
 SELECT setval('transactions_id_seq',    (SELECT MAX(id) FROM transactions));
 SELECT setval('transaction_log_id_seq', (SELECT MAX(id) FROM transaction_log));
 
-COMMIT;
+-- COMMIT;
