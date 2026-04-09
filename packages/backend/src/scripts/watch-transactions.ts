@@ -65,6 +65,8 @@ const EVENT_COLOR: Record<string, string> = {
 
 const CHANNEL = 'transaction_log_events';
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 // ── Configuracion de nodos ─────────────────────────────────────────────
 
 const NODE_CONFIGS: NodeConfig[] = [
@@ -171,6 +173,41 @@ function formatEvent(ev: TransactionEvent): string {
   ].join(` ${sep} `);
 }
 
+function formatVipEvent(
+  type: 'sync' | 'verified',
+  txId: number,
+  accountId: number,
+  customerName: string,
+  balance?: string,
+): string {
+  const ts = new Date().toLocaleTimeString('es-MX', { hour12: false });
+  const sep = `${DIM}|${RST}`;
+
+  if (type === 'sync') {
+    const label = '\u2B50 VIP_SYNC';
+    return [
+      `${DIM}[${ts}]${RST}`,
+      `${BOLD}${C.yellow}${label.padEnd(15)}${RST}`,
+      `${C.white}tx:${txId}${RST}`,
+      `${C.yellow}${customerName} (acc:${accountId}) \u2192 vip schema${RST}`,
+      `${C.yellow}nodo-c${RST}`,
+    ].join(` ${sep} `);
+  }
+
+  const label = '\u2713 VIP_VERIFIED';
+  const bal = Number(balance).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return [
+    `${DIM}[${ts}]${RST}`,
+    `${BOLD}${C.boldGreen}${label.padEnd(15)}${RST}`,
+    `${C.white}tx:${txId}${RST}`,
+    `${C.boldGreen}acc:${accountId} balance=$${bal} confirmado${RST}`,
+    `${C.boldGreen}nodo-c${RST}`,
+  ].join(` ${sep} `);
+}
+
 // ── Main ───────────────────────────────────────────────────────────────
 
 async function main() {
@@ -194,11 +231,85 @@ async function main() {
     process.exit(1);
   }
 
+  // ── VIP cache: cargar cuentas VIP desde Nodo C ──────────────────────
+  const vipCache = new Map<number, string>(); // accountId → customerName
+  let vipClient: Client | null = null;
+  const nodeCUrl = process.env.NODE_C_DATABASE_URL;
+
+  if (nodeCUrl) {
+    try {
+      vipClient = new Client({
+        connectionString: nodeCUrl,
+        ssl: { rejectUnauthorized: false },
+      });
+      await vipClient.connect();
+      const res = await vipClient.query(`
+        SELECT a.id, c.name
+        FROM distribank_vip_customers.accounts a
+        JOIN distribank_vip_customers.customer_accounts ca
+          ON (ca.checking_account_id = a.id OR ca.credit_account_id = a.id)
+        JOIN distribank_vip_customers.customers c
+          ON c.id = ca.customer_id
+      `);
+      for (const row of res.rows) {
+        vipCache.set(Number(row.id), row.name);
+      }
+      console.log(`  ${C.yellow}\u2B50${RST} VIP cache: ${vipCache.size} cuentas VIP cargadas desde nodo-c`);
+    } catch {
+      console.log(`  ${C.yellow}!${RST} VIP cache: no se pudo cargar (nodo-c inaccesible)`);
+    }
+  }
+
+  // ── VIP check post-COMPLETED ────────────────────────────────────────
+  async function handleVipCheck(event: TransactionEvent): Promise<void> {
+    if (event.event_type !== 'COMPLETED' || vipCache.size === 0 || !vipClient) return;
+
+    const fromName = vipCache.get(event.from_account_id);
+    const toName = vipCache.get(event.to_account_id);
+    if (!fromName && !toName) return;
+
+    // Mostrar VIP_SYNC para cada cuenta VIP involucrada
+    if (fromName) {
+      console.log(formatVipEvent('sync', event.transaction_id, event.from_account_id, fromName));
+    }
+    if (toName) {
+      console.log(formatVipEvent('sync', event.transaction_id, event.to_account_id, toName));
+    }
+
+    // Timeout: esperar a que el backend complete el sync VIP
+    await sleep(3000);
+
+    // Verificar balances en schema VIP
+    try {
+      if (fromName) {
+        const res = await vipClient.query(
+          'SELECT balance FROM distribank_vip_customers.accounts WHERE id = $1',
+          [event.from_account_id],
+        );
+        const bal = res.rows[0]?.balance;
+        console.log(formatVipEvent('verified', event.transaction_id, event.from_account_id, fromName, bal));
+      }
+      if (toName) {
+        const res = await vipClient.query(
+          'SELECT balance FROM distribank_vip_customers.accounts WHERE id = $1',
+          [event.to_account_id],
+        );
+        const bal = res.rows[0]?.balance;
+        console.log(formatVipEvent('verified', event.transaction_id, event.to_account_id, toName, bal));
+      }
+    } catch {
+      console.log(`  ${C.red}!${RST} VIP verify: error al consultar schema VIP`);
+    }
+  }
+
   // Conectar todos los suscriptores en paralelo
   const results = await Promise.allSettled(
     subscribers.map(async (sub) => {
       await sub.start();
-      sub.on('log', (event: TransactionEvent) => queue.enqueue(event));
+      sub.on('log', (event: TransactionEvent) => {
+        queue.enqueue(event);
+        handleVipCheck(event);
+      });
     }),
   );
 
@@ -222,6 +333,7 @@ async function main() {
   const shutdown = async () => {
     console.log(`\n${DIM}  Cerrando conexiones...${RST}`);
     await Promise.all(subscribers.map((s) => s.stop()));
+    if (vipClient) await vipClient.end().catch(() => {});
     process.exit(0);
   };
 
