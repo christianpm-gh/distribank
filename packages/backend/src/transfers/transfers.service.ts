@@ -1,11 +1,14 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { NodeRouterService } from '../database/node-router.service';
 import { CreateTransferDto } from './dto/create-transfer.dto';
+import { PrismaService } from '../database/prisma.service';
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 @Injectable()
 export class TransfersService {
+  private readonly logger = new Logger(TransfersService.name);
+
   constructor(private readonly nodeRouter: NodeRouterService) {}
 
   async create(customerId: number, dto: CreateTransferDto) {
@@ -120,6 +123,14 @@ export class TransfersService {
       data: { balance: { increment: dto.amount } },
     });
 
+    // VIP sync post-COMPLETED
+    await sleep(3000);
+    await this.syncVipSchema(
+      fromAccount.id, toAccount.id, dto.amount,
+      { uuid: dto.transaction_uuid, type: 'TRANSFER', status: 'COMPLETED', initiated_at: tx.initiated_at, completed_at: tx.completed_at },
+      node, node,
+    );
+
     return {
       transaction_uuid: dto.transaction_uuid,
       status: 'COMPLETED',
@@ -185,6 +196,14 @@ export class TransfersService {
         data: { status: 'COMPLETED', completed_at: new Date() },
       });
 
+      // VIP sync post-COMPLETED
+      await sleep(3000);
+      await this.syncVipSchema(
+        fromAccount.id, toAccount.id, dto.amount,
+        { uuid: dto.transaction_uuid, type: 'TRANSFER', status: 'COMPLETED', initiated_at: tx.initiated_at, completed_at: new Date() },
+        originNode, destNode,
+      );
+
       return {
         transaction_uuid: dto.transaction_uuid,
         status: 'COMPLETED',
@@ -216,6 +235,90 @@ export class TransfersService {
         status: 'ROLLED_BACK',
         initiated_at: tx.initiated_at.toISOString(),
       };
+    }
+  }
+
+  // ── VIP Sync ────────────────────────────────────────────────────────
+
+  private async isVipAccount(prismaC: PrismaService, accountId: number): Promise<boolean> {
+    const rows: any[] = await prismaC.$queryRawUnsafe(
+      `SELECT 1 FROM distribank_vip_customers.accounts WHERE id = $1`,
+      accountId,
+    );
+    return rows.length > 0;
+  }
+
+  private async syncVipSchema(
+    fromAccountId: number,
+    toAccountId: number,
+    amount: number,
+    txData: { uuid: string; type: string; status: string; initiated_at: Date; completed_at: Date | null },
+    originNode: string,
+    destNode: string,
+  ): Promise<void> {
+    try {
+      const prismaC = this.nodeRouter.getPrismaForNode('nodo-c');
+      if (!prismaC.isConnected) return;
+
+      const fromIsVip = await this.isVipAccount(prismaC, fromAccountId);
+      const toIsVip = await this.isVipAccount(prismaC, toAccountId);
+
+      if (!fromIsVip && !toIsVip) return;
+
+      // Actualizar balance del origen VIP (debito)
+      if (fromIsVip) {
+        await prismaC.$executeRawUnsafe(
+          `UPDATE distribank_vip_customers.accounts SET balance = balance - $1 WHERE id = $2`,
+          amount, fromAccountId,
+        );
+        this.logger.log(`⭐ VIP sync: balance debitado acc:${fromAccountId} (-$${amount})`);
+      }
+
+      // Actualizar balance del destino VIP (credito)
+      if (toIsVip) {
+        await prismaC.$executeRawUnsafe(
+          `UPDATE distribank_vip_customers.accounts SET balance = balance + $1 WHERE id = $2`,
+          amount, toAccountId,
+        );
+        this.logger.log(`⭐ VIP sync: balance acreditado acc:${toAccountId} (+$${amount})`);
+      }
+
+      // Replicar transaccion y logs solo si el origen es VIP (FK en from_account_id)
+      if (fromIsVip) {
+        const inserted: any[] = await prismaC.$queryRawUnsafe(
+          `INSERT INTO distribank_vip_customers.transactions
+             (transaction_uuid, from_account_id, to_account_id, amount, transaction_type, status, initiated_at, completed_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+           ON CONFLICT (transaction_uuid) DO UPDATE
+             SET status = EXCLUDED.status, completed_at = EXCLUDED.completed_at
+           RETURNING id`,
+          txData.uuid, fromAccountId, toAccountId, amount,
+          txData.type, txData.status, txData.initiated_at, txData.completed_at,
+        );
+
+        const vipTxId = inserted[0]?.id;
+        if (vipTxId) {
+          const now = txData.initiated_at;
+          const events = [
+            { event: 'INITIATED', ts: now, node: originNode },
+            { event: 'DEBIT_APPLIED', ts: new Date(now.getTime() + 3000), node: originNode },
+            { event: 'CREDIT_APPLIED', ts: new Date(now.getTime() + 6000), node: destNode },
+            { event: 'COMPLETED', ts: new Date(now.getTime() + 9000), node: originNode },
+          ];
+
+          for (const e of events) {
+            await prismaC.$executeRawUnsafe(
+              `INSERT INTO distribank_vip_customers.transaction_log
+                 (transaction_id, event_type, details, created_at)
+               VALUES ($1, $2, $3, $4)`,
+              vipTxId, e.event, JSON.stringify({ node_id: e.node }), e.ts,
+            );
+          }
+          this.logger.log(`⭐ VIP sync: transaccion + logs replicados (vip_tx:${vipTxId})`);
+        }
+      }
+    } catch (err) {
+      this.logger.warn(`⚠️ VIP sync fallido: ${(err as Error).message}`);
     }
   }
 }
