@@ -21,9 +21,9 @@ erDiagram
     }
 
     customer_accounts {
-        BigInt customer_id PK_FK "→ customers.id"
-        BigInt checking_account_id FK_UK "→ accounts.id, nullable"
-        BigInt credit_account_id FK_UK "→ accounts.id, nullable"
+        BigInt customer_id PK,FK "-> customers.id"
+        BigInt checking_account_id FK,UK "-> accounts.id, nullable"
+        BigInt credit_account_id FK,UK "-> accounts.id, nullable"
     }
 
     accounts {
@@ -42,11 +42,11 @@ erDiagram
 
     cards {
         BigInt id PK "autoincrement"
-        BigInt account_id FK "→ accounts.id"
+        BigInt account_id FK "-> accounts.id"
         VarChar16 card_number UK
         VarChar10 card_type "DEBIT | CREDIT"
-        VarChar4 cvv "nunca expuesto en API"
-        Date expiration_date "formato YYYY-MM"
+        VarChar4 cvv "no expuesto"
+        Date expiration_date "YYYY-MM"
         VarChar10 status "default ACTIVE"
         Decimal15_2 daily_limit "nullable"
         DateTime issued_at "default now()"
@@ -55,9 +55,9 @@ erDiagram
     transactions {
         BigInt id PK "autoincrement"
         UUID transaction_uuid UK "default uuid()"
-        BigInt from_account_id FK "→ accounts.id"
-        BigInt to_account_id FK "→ accounts.id"
-        BigInt card_id FK "→ cards.id, nullable"
+        BigInt from_account_id FK "-> accounts.id"
+        BigInt to_account_id FK "-> accounts.id"
+        BigInt card_id FK "-> cards.id, nullable"
         Decimal15_2 amount
         VarChar20 transaction_type "TRANSFER | PURCHASE | DEPOSIT"
         VarChar15 status "default PENDING"
@@ -67,9 +67,9 @@ erDiagram
 
     transaction_log {
         BigInt id PK "autoincrement"
-        BigInt transaction_id FK "→ transactions.id"
-        VarChar30 event_type "INITIATED | DEBIT_APPLIED | ..."
-        Json details "nullable, contiene node_id"
+        BigInt transaction_id FK "-> transactions.id"
+        VarChar30 event_type "INITIATED | DEBIT_APPLIED"
+        Json details "contiene node_id"
         DateTime created_at "default now()"
     }
 ```
