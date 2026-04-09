@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 260" role="img" aria-labelledby="logoTitle logoDesc">
+  <title id="logoTitle">DistriBank</title>
+  <desc id="logoDesc">Logo de DistriBank con escudo de red distribuida y palabra marca</desc>
+
+  <defs>
+    <linearGradient id="shieldStroke" x1="110" y1="28" x2="110" y2="146" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#1A56DB"/>
+    </linearGradient>
+
+    <linearGradient id="networkStroke" x1="110" y1="62" x2="110" y2="142" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#BFDBFE"/>
+      <stop offset="1" stop-color="#60A5FA"/>
+    </linearGradient>
+
+    <filter id="brandGlow" x="0" y="0" width="220" height="190" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feColorMatrix in="blur" values="0 0 0 0 0.102 0 0 0 0 0.337 0 0 0 0 0.859 0 0 0 0.45 0"/>
+    </filter>
+  </defs>
+
+  <g transform="translate(50 18)">
+    <path d="M110 16L40 42V98C40 137 69 162 110 180C151 162 180 137 180 98V42L110 16Z" fill="none" stroke="url(#shieldStroke)" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M110 30L53 51V96C53 126 74 145 110 162C146 145 167 126 167 96V51L110 30Z" fill="none" stroke="url(#shieldStroke)" stroke-width="5" stroke-linejoin="round" opacity="0.9"/>
+
+    <path d="M110 30V162M70 68L110 104M150 68L110 104M70 68V120M150 68V120M70 120L110 150M150 120L110 150" stroke="url(#networkStroke)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <circle cx="110" cy="104" r="13" fill="#0F172A" stroke="#93C5FD" stroke-width="5"/>
+    <circle cx="70" cy="68" r="9" fill="#0F172A" stroke="#60A5FA" stroke-width="4"/>
+    <circle cx="150" cy="68" r="9" fill="#0F172A" stroke="#60A5FA" stroke-width="4"/>
+    <circle cx="70" cy="120" r="9" fill="#0F172A" stroke="#60A5FA" stroke-width="4"/>
+    <circle cx="150" cy="120" r="9" fill="#0F172A" stroke="#60A5FA" stroke-width="4"/>
+
+    <ellipse cx="110" cy="102" rx="60" ry="56" fill="#1A56DB" opacity="0.2" filter="url(#brandGlow)"/>
+  </g>
+
+  <text x="310" y="226" text-anchor="middle" fill="#F1F5F9" font-size="58" font-family="Sora, Inter, sans-serif" font-weight="700" letter-spacing="1.4">DISTRIBANK</text>
+</svg>

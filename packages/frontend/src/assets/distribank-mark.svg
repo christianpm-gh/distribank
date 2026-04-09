@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 92" role="img" aria-labelledby="brandMarkTitle brandMarkDesc">
+  <title id="brandMarkTitle">DistriBank Mark</title>
+  <desc id="brandMarkDesc">Isotipo de escudo de DistriBank para espacios compactos</desc>
+
+  <defs>
+    <linearGradient id="markShield" x1="46" y1="6" x2="46" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#1A56DB"/>
+    </linearGradient>
+
+    <linearGradient id="markNetwork" x1="46" y1="22" x2="46" y2="70" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#BFDBFE"/>
+      <stop offset="1" stop-color="#60A5FA"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M46 5L14 18V43C14 62 27 74 46 84C65 74 78 62 78 43V18L46 5Z" fill="none" stroke="url(#markShield)" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M46 11L20 21V42C20 55 29 63 46 73C63 63 72 55 72 42V21L46 11Z" fill="none" stroke="url(#markShield)" stroke-width="3" stroke-linejoin="round" opacity="0.92"/>
+
+  <path d="M46 11V73M29 29L46 45M63 29L46 45M29 29V53M63 29V53M29 53L46 67M63 53L46 67" stroke="url(#markNetwork)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <circle cx="46" cy="45" r="6.2" fill="#0F172A" stroke="#93C5FD" stroke-width="3"/>
+  <circle cx="29" cy="29" r="4.6" fill="#0F172A" stroke="#60A5FA" stroke-width="2.2"/>
+  <circle cx="63" cy="29" r="4.6" fill="#0F172A" stroke="#60A5FA" stroke-width="2.2"/>
+  <circle cx="29" cy="53" r="4.6" fill="#0F172A" stroke="#60A5FA" stroke-width="2.2"/>
+  <circle cx="63" cy="53" r="4.6" fill="#0F172A" stroke="#60A5FA" stroke-width="2.2"/>
+</svg>

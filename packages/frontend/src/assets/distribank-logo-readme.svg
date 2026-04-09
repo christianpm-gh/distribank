@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" role="img" aria-labelledby="readmeLogoTitle readmeLogoDesc">
+  <title id="readmeLogoTitle">DistriBank</title>
+  <desc id="readmeLogoDesc">Logo compacto de DistriBank para cabecera del README</desc>
+
+  <defs>
+    <linearGradient id="rmShield" x1="122" y1="46" x2="122" y2="174" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#1A56DB"/>
+    </linearGradient>
+
+    <linearGradient id="rmNetwork" x1="122" y1="78" x2="122" y2="162" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#BFDBFE"/>
+      <stop offset="1" stop-color="#60A5FA"/>
+    </linearGradient>
+
+    <radialGradient id="rmGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(122 114) rotate(90) scale(70 70)">
+      <stop stop-color="#1A56DB" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#1A56DB" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="8" y="8" width="744" height="224" rx="24" fill="#0F172A" stroke="#273549" stroke-width="2"/>
+
+  <g transform="translate(16 0)">
+    <circle cx="106" cy="114" r="70" fill="url(#rmGlow)"/>
+
+    <path d="M106 40L54 60V106C54 136 76 155 106 171C136 155 158 136 158 106V60L106 40Z" fill="none" stroke="url(#rmShield)" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M106 50L65 66V104C65 127 81 142 106 155C131 142 147 127 147 104V66L106 50Z" fill="none" stroke="url(#rmShield)" stroke-width="4" stroke-linejoin="round" opacity="0.92"/>
+
+    <path d="M106 50V155M76 78L106 106M136 78L106 106M76 78V118M136 78V118M76 118L106 144M136 118L106 144" stroke="url(#rmNetwork)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <circle cx="106" cy="106" r="9.5" fill="#0F172A" stroke="#93C5FD" stroke-width="4"/>
+    <circle cx="76" cy="78" r="6.5" fill="#0F172A" stroke="#60A5FA" stroke-width="3"/>
+    <circle cx="136" cy="78" r="6.5" fill="#0F172A" stroke="#60A5FA" stroke-width="3"/>
+    <circle cx="76" cy="118" r="6.5" fill="#0F172A" stroke="#60A5FA" stroke-width="3"/>
+    <circle cx="136" cy="118" r="6.5" fill="#0F172A" stroke="#60A5FA" stroke-width="3"/>
+
+    <text x="205" y="126" fill="#F1F5F9" font-size="74" font-family="Sora, Inter, sans-serif" font-weight="700" letter-spacing="1.6">DISTRIBANK</text>
+    <text x="208" y="166" fill="#94A3B8" font-size="24" font-family="Inter, sans-serif" font-weight="500" letter-spacing="0.9">SISTEMA BANCARIO DISTRIBUIDO</text>
+  </g>
+</svg>

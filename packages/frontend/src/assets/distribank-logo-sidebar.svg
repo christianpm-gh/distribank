@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 92" role="img" aria-labelledby="logoSidebarTitle logoSidebarDesc">
+  <title id="logoSidebarTitle">DistriBank Sidebar</title>
+  <desc id="logoSidebarDesc">Logotipo compacto de DistriBank para navegación lateral</desc>
+
+  <defs>
+    <linearGradient id="sbShield" x1="44" y1="6" x2="44" y2="70" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#1A56DB"/>
+    </linearGradient>
+
+    <linearGradient id="sbNetwork" x1="44" y1="22" x2="44" y2="68" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#BFDBFE"/>
+      <stop offset="1" stop-color="#60A5FA"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(8 6)">
+    <path d="M44 4L14 15V39C14 57 26 68 44 78C62 68 74 57 74 39V15L44 4Z" fill="none" stroke="url(#sbShield)" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M44 10L20 19V38C20 51 29 59 44 68C59 59 68 51 68 38V19L44 10Z" fill="none" stroke="url(#sbShield)" stroke-width="3" stroke-linejoin="round" opacity="0.92"/>
+
+    <path d="M44 10V68M28 26L44 42M60 26L44 42M28 26V49M60 26V49M28 49L44 63M60 49L44 63" stroke="url(#sbNetwork)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <circle cx="44" cy="42" r="6" fill="#0F172A" stroke="#93C5FD" stroke-width="3"/>
+    <circle cx="28" cy="26" r="4.5" fill="#0F172A" stroke="#60A5FA" stroke-width="2.2"/>
+    <circle cx="60" cy="26" r="4.5" fill="#0F172A" stroke="#60A5FA" stroke-width="2.2"/>
+    <circle cx="28" cy="49" r="4.5" fill="#0F172A" stroke="#60A5FA" stroke-width="2.2"/>
+    <circle cx="60" cy="49" r="4.5" fill="#0F172A" stroke="#60A5FA" stroke-width="2.2"/>
+  </g>
+
+  <text x="108" y="58" fill="#F1F5F9" font-size="36" font-family="Sora, Inter, sans-serif" font-weight="700" letter-spacing="0.8">DISTRIBANK</text>
+</svg>
